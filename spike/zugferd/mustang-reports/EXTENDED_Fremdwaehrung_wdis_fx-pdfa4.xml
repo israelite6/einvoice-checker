@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<validation filename="EXTENDED_Fremdwaehrung_wdis_fx-pdfa4.pdf" datetime="2026-09-24 19:22:27">
+  <pdf>ValidationResult [flavour=4f, totalAssertions=8617, assertions=[], isCompliant=true]
+    <info>
+      <signature>unknown</signature>
+      <duration unit="ms">812</duration>
+    </info>
+    <messages>
+      <error type="23">Not a PDF/A-3</error> 
+    </messages>
+    <summary status="invalid"/>
+  </pdf>  
+  <xml>
+    <info>
+      <version>2</version>
+      <profile>urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended</profile>
+      <validator version="2.26.0"/>
+      <rules>
+        <fired>177</fired>
+        <failed>0</failed>
+      </rules>
+      <duration unit="ms">1168</duration>
+    </info>
+    <summary status="valid"/>
+  </xml>
+  <summary status="valid"/>
+</validation>
+

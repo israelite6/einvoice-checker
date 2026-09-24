@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { trackCheck, trackInterest, trackPdf, trackView } from './analytics';
+import { trackCheck, trackInterest, trackView } from './analytics';
 import { DropZone } from './components/DropZone';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Header } from './components/Header';
@@ -8,6 +8,7 @@ import { Faq, Footer, LegalPage } from './components/Pages';
 import { ResultPanel, type FileResult } from './components/Results';
 import { EngineError, rulesUrl, validateInvoice, warmUp, type ValidationResult } from './engine/validate';
 import { MAX_BYTES, readXmlFile } from './files';
+import { PdfUnreadable } from './engine/pdf';
 import { DICTS, LangContext, initialLang, useI18n, type Lang } from './i18n';
 import { useTheme } from './theme';
 
@@ -56,16 +57,19 @@ const RULE_FILES = [
 ];
 
 // Loaded before the service worker controls a first visit; fetched again so they are cached offline too.
-const CORE_FILES = [rulesUrl('scenarios.xml'), rulesUrl('xsd.json'), rulesUrl('manifest.json'), `/vendor/SaxonJS2.rt.js?v=${__RULES_VERSION__}`, `/vendor/LICENSE-SaxonJS.txt?v=${__RULES_VERSION__}`, '/samples/valid.xml', '/samples/invalid.xml'];
+const CORE_FILES = [rulesUrl('scenarios.xml'), rulesUrl('xsd.json'), rulesUrl('manifest.json'), `/vendor/SaxonJS2.rt.js?v=${__RULES_VERSION__}`, `/vendor/LICENSE-SaxonJS.txt?v=${__RULES_VERSION__}`, '/samples/valid.xml', '/samples/invalid.xml', '/samples/zugferd.pdf'];
 
 const VIEWER_RUNTIME_FILES = ['viz/FileSaver-v2.0.5.js', 'viz/xrechnung-viewer.js', 'viz/xrechnung-viewer.css', 'viz/l10n/de.xml', 'viz/l10n/en.xml'];
 
-interface Input { name: string; text: () => Promise<string>; kind: 'xml' | 'pdf' | 'too-large'; sample: boolean }
+interface Input { name: string; text: () => Promise<string>; bytes?: () => Promise<Uint8Array>; kind: 'xml' | 'pdf' | 'too-large'; sample: boolean }
 
 function announce(t: ReturnType<typeof useI18n>['t'], res: ValidationResult): string {
   return res.status === 'valid' ? t.statusValid
     : res.status === 'valid-with-notes' ? t.statusValidNotes
     : res.status === 'invalid' ? `${t.statusInvalid}: ${res.findings.filter((f) => f.level === 'error').length} ${t.errors}`
+    : res.status === 'pdf-no-xml' ? t.statusPdfNoXml
+    : res.status === 'profile-incomplete' ? t.statusProfileIncomplete
+    : res.status === 'profile-unsupported' ? t.statusProfileUnsupported
     : res.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
 }
 
@@ -106,14 +110,27 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
   const run = useCallback(async (id: string, f: Input) => {
     patch(id, { state: 'checking', step: undefined });
     try {
-      const xml = await f.text();
-      const result = await validateInvoice(xml, (step) => patch(id, { step }));
+      let result: ValidationResult & { pdf?: { profile: string; attachment: string | null } };
+      let xml: string | undefined;
+      if (f.kind === 'pdf' && f.bytes) {
+        // ZUGFeRD / Factur-X: loaded on demand only when a PDF is dropped.
+        const { validatePdf } = await import('./engine/zugferd');
+        const r = await validatePdf(await f.bytes(), (step) => patch(id, { step }));
+        result = r;
+        xml = r.xml ?? undefined;
+      } else {
+        xml = await f.text();
+        result = await validateInvoice(xml, (step) => patch(id, { step }));
+      }
       patch(id, { state: 'done', result, xml });
       onAnnounce(announce(t, result));
       window.dispatchEvent(new Event('einvoice:checked'));
-      trackCheck({ status: result.status, syntax: result.syntax, sample: f.sample, ms: result.ms, rules: result.findings.filter((x) => x.level === 'error').map((x) => x.code) });
+      trackCheck({ status: result.status, syntax: result.syntax, sample: f.sample, ms: result.ms, rules: result.findings.filter((x) => x.level === 'error').map((x) => x.code), format: f.kind === 'pdf' ? 'pdf' : 'xml', profile: result.pdf?.profile });
     } catch (e) {
-      if (e instanceof EngineError) {
+      if (e instanceof PdfUnreadable) {
+        patch(id, { state: 'done', result: { status: 'pdf-unreadable', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
+        onAnnounce(t.statusPdfUnreadable);
+      } else if (e instanceof EngineError) {
         patch(id, { state: 'engine-error' });
         onAnnounce(t.statusEngine);
       } else {
@@ -124,12 +141,11 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
   }, [onAnnounce, t]);
 
   const check = useCallback(async (files: Input[]) => {
-    const entries: FileResult[] = files.map((f) => ({ id: uid(), name: f.name, sample: f.sample, state: f.kind === 'xml' ? 'checking' : f.kind }));
+    const entries: FileResult[] = files.map((f) => ({ id: uid(), name: f.name, sample: f.sample, state: f.kind === 'too-large' ? 'too-large' : 'checking' }));
     setResults((rs) => [...entries, ...rs]);
     document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     for (const [i, f] of files.entries()) {
       inputs.current.set(entries[i].id, f);
-      if (f.kind === 'pdf') { trackPdf(); onAnnounce(t.statusPdf); continue; }
       if (f.kind === 'too-large') { onAnnounce(t.tooLarge); continue; }
       await run(entries[i].id, f);
     }
@@ -138,11 +154,18 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
   const onFiles = (files: File[]) => check(files.map((f) => ({
     name: f.name,
     text: () => readXmlFile(f),
+    bytes: async () => new Uint8Array(await f.arrayBuffer()),
     kind: f.size > MAX_BYTES ? 'too-large' : f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'xml',
     sample: false,
   })));
 
-  const sample = (kind: 'valid' | 'invalid') => check([{
+  const sample = (kind: 'valid' | 'invalid' | 'zugferd') => check([kind === 'zugferd' ? {
+    name: 'beispiel-zugferd.pdf',
+    text: async () => '',
+    bytes: () => fetch('/samples/zugferd.pdf').then(async (r) => { if (!r.ok) throw new EngineError(String(r.status)); return new Uint8Array(await r.arrayBuffer()); }),
+    kind: 'pdf',
+    sample: true,
+  } : {
     name: kind === 'valid' ? 'beispiel-gueltig.xml' : 'beispiel-fehler.xml',
     text: () => fetch(`/samples/${kind}.xml`).then((r) => { if (!r.ok) throw new EngineError(String(r.status)); return r.text(); }),
     kind: 'xml',
@@ -170,6 +193,7 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
             <span className="text-slate-500 dark:text-slate-400">{t.samplesLabel}</span>
             <button type="button" onClick={() => sample('valid')} className="min-h-11 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-500/50">{t.sampleValid}</button>
             <button type="button" onClick={() => sample('invalid')} className="min-h-11 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-rose-500/50">{t.sampleInvalid}</button>
+            <button type="button" onClick={() => sample('zugferd')} className="min-h-11 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-violet-500/50">{t.sampleZugferd}</button>
           </div>
           <p className="mx-auto mt-6 max-w-xl text-sm text-slate-500 dark:text-slate-400">{t.privacyDetail}</p>
         </div>

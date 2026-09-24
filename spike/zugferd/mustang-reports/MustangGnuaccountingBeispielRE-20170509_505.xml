@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<validation filename="MustangGnuaccountingBeispielRE-20170509_505.pdf" datetime="2026-09-24 19:22:31">
+  <pdf>ValidationResult [flavour=3u, totalAssertions=10992, assertions=[], isCompliant=true]
+    <info>
+      <signature>Mustang</signature>
+      <duration unit="ms">817</duration>
+    </info>
+    <summary status="valid"/>
+  </pdf>  
+  <xml>
+    <info>
+      <version>1</version>
+      <profile>urn:ferd:CrossIndustryDocument:invoice:1p0:basic</profile>
+      <validator version="2.26.0"/>
+      <rules>
+        <fired>79</fired>
+        <failed>0</failed>
+      </rules>
+      <duration unit="ms">2589</duration>
+    </info>
+    <summary status="valid"/>
+  </xml>
+  <summary status="valid"/>
+</validation>
+

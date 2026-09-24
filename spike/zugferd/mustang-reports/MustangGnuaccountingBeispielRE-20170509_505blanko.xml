@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<validation filename="MustangGnuaccountingBeispielRE-20170509_505blanko.pdf" datetime="2026-09-24 19:22:35">
+  <pdf>ValidationResult [flavour=1a, totalAssertions=9443, assertions=[], isCompliant=true]
+    <info>
+      <signature>unknown</signature>
+      <duration unit="ms">751</duration>
+    </info>
+    <messages>
+      <error type="11">XMP Metadata: ConformanceLevel not found</error>  
+      <error type="12">XMP Metadata: ConformanceLevel contains invalid value</error>  
+      <error type="13">XMP Metadata: DocumentType not found</error>  
+      <error type="14">XMP Metadata: DocumentType invalid</error>  
+      <error type="21">XMP Metadata: DocumentFileName not found</error>  
+      <error type="19">XMP Metadata: DocumentFileName contains invalid value</error>  
+      <error type="15">XMP Metadata: Version not found</error>  
+      <error type="16">XMP Metadata: Version contains invalid value</error>  
+      <error type="23">Not a PDF/A-3</error> 
+    </messages>
+    <summary status="invalid"/>
+  </pdf>  
+  <messages>
+    <exception type="17">XML could not be extracted</exception> 
+  </messages>
+  <summary status="invalid"/>
+</validation>
+

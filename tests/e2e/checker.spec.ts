@@ -55,10 +55,61 @@ test('privacy: a user file never leaves the browser', async ({ page, baseURL }) 
   expect(outbound).toEqual([]);
 });
 
-test('PDF shows the coming-soon state', async ({ page }) => {
+// ---- Release 2: ZUGFeRD / Factur-X PDFs ----
+const pdf = (f: string) => ({ name: f, mimeType: 'application/pdf', buffer: fs.readFileSync(path.resolve('tests/fixtures', f)) });
+
+test('ZUGFeRD: valid PDF is checked, profile shown, invoice view works', async ({ page }) => {
+  const problems = await watch(page);
   await page.goto('/');
-  await page.locator('input[type=file]').setInputFiles({ name: 'rechnung.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.7') });
-  await expect(page.getByRole('heading', { name: 'ZUGFeRD-PDF: bald verfügbar' })).toBeVisible();
+  await page.locator('input[type=file]').setInputFiles(pdf('zugferd-valid.pdf'));
+  await expect(page.getByRole('heading', { name: /^Gültig/ })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByText(/ZUGFeRD \/ Factur-X · Profil XRECHNUNG/)).toBeVisible();
+  await expect(page.frameLocator('iframe[title="Rechnung ansehen"]').getByText('Käuferreferenz').first()).toBeVisible({ timeout: 30_000 });
+  expect(problems).toEqual([]);
+});
+
+test('ZUGFeRD sample button works', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ZUGFeRD-PDF' }).click();
+  await expect(page.getByRole('heading', { name: /^Gültig/ })).toBeVisible({ timeout: 45_000 });
+});
+
+test('ZUGFeRD: picture that differs from the XML is flagged (real Mustang sample: 963,12 vs 963.11)', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('input[type=file]').setInputFiles(pdf('zugferd-picture-mismatch.pdf'));
+  await expect(page.getByRole('heading', { name: 'Gültig mit Warnungen' })).toBeVisible({ timeout: 45_000 });
+  await page.getByRole('tab', { name: /Prüfergebnis/ }).click();
+  await expect(page.getByText('Der Gesamtbetrag aus der XML steht nicht im PDF-Bild. Maßgeblich ist die XML.')).toBeVisible();
+});
+
+test('ZUGFeRD: EXTENDED profile is viewable but explicitly not checked', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('input[type=file]').setInputFiles(pdf('zugferd-extended.pdf'));
+  await expect(page.getByRole('heading', { name: 'Profil wird noch nicht geprüft' })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByRole('tab', { name: /Prüfergebnis/ })).toHaveCount(0);
+  await expect(page.locator('iframe[title="Rechnung ansehen"]')).toBeVisible({ timeout: 30_000 });
+});
+
+test('ZUGFeRD 1: not checked and no broken view', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('input[type=file]').setInputFiles(pdf('zugferd1.pdf'));
+  await expect(page.getByRole('heading', { name: 'Profil wird noch nicht geprüft' })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByText(/Profil ZUGFeRD 1/)).toBeVisible();
+  await expect(page.locator('iframe[title="Rechnung ansehen"]')).toHaveCount(0);
+});
+
+test('ZUGFeRD: MINIMUM profile is reported as incomplete invoice data', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('input[type=file]').setInputFiles(pdf('zugferd-minimum.pdf'));
+  await expect(page.getByRole('heading', { name: 'Profil ohne vollständige Rechnungsdaten' })).toBeVisible({ timeout: 45_000 });
+});
+
+test('plain PDF without XML and a corrupt PDF are reported clearly', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('input[type=file]').setInputFiles(pdf('plain.pdf'));
+  await expect(page.getByRole('heading', { name: 'Keine eingebettete E-Rechnung gefunden' })).toBeVisible({ timeout: 45_000 });
+  await page.locator('input[type=file]').setInputFiles({ name: 'kaputt.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.7 this is not a pdf') });
+  await expect(page.getByRole('heading', { name: 'PDF konnte nicht gelesen werden' })).toBeVisible({ timeout: 45_000 });
 });
 
 test('theme toggle switches and persists', async ({ page }) => {
@@ -199,7 +250,7 @@ test('B2: production analytics path sends only whitelisted fields, never file co
   await page.waitForTimeout(1000);
   const beacons: string[] = await page.evaluate(() => (window as unknown as { __beacons: string[] }).__beacons);
   expect(beacons.length).toBeGreaterThanOrEqual(5); // view + 4 checks (+ multi)
-  const allowed = new Set(['e', 's', 'x', 'sample', 'ms', 'r', 'n', 'ref']);
+  const allowed = new Set(['e', 's', 'x', 'sample', 'ms', 'r', 'n', 'ref', 'f', 'p']);
   for (const b of beacons) {
     const [url, body] = [b.slice(0, b.indexOf(' ')), b.slice(b.indexOf(' ') + 1)];
     expect(url).toMatch(/\/api\/event$/);
@@ -295,4 +346,19 @@ test('N1: no layout shift while a check runs and the invoice view grows (CLS < 0
   await page.waitForTimeout(1500);
   const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);
   expect(cls).toBeLessThan(0.1);
+});
+
+test('N1 (PDF path): no layout shift while a ZUGFeRD PDF is checked (CLS < 0.1)', async ({ page, context }) => {
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    const w = window as unknown as { __cls: number };
+    w.__cls = 0;
+    new PerformanceObserver((l) => { for (const e of l.getEntries() as unknown as { value: number; hadRecentInput: boolean }[]) if (!e.hadRecentInput) w.__cls += e.value; }).observe({ type: 'layout-shift' });
+  });
+  await page.getByRole('button', { name: 'ZUGFeRD-PDF' }).click();
+  await expect(page.frameLocator('iframe[title="Rechnung ansehen"]').getByText('Käuferreferenz').first()).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(1500);
+  expect(await page.evaluate(() => (window as unknown as { __cls: number }).__cls)).toBeLessThan(0.1);
 });

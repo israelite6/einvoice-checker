@@ -9,10 +9,12 @@ export interface CheckEvent {
   sample: boolean;
   ms: number;
   rules: string[];
+  format?: 'xml' | 'pdf';
+  profile?: string;
 }
 
 /** Allowed payload keys (the server enforces the same whitelist). */
-export const PAYLOAD_KEYS = ['e', 's', 'x', 'sample', 'ms', 'r', 'n', 'ref'] as const;
+export const PAYLOAD_KEYS = ['e', 's', 'x', 'sample', 'ms', 'r', 'n', 'ref', 'f', 'p'] as const;
 
 /** Coarse referrer class only; never the full URL. */
 export function referrerClass(referrer: string, ownHost: string): string {
@@ -35,6 +37,8 @@ export function buildPayload(name: EventName, data: Partial<CheckEvent> & { n?: 
     p.sample = Boolean(data.sample);
     p.ms = Math.round(data.ms ?? 0);
     p.r = (data.rules ?? []).slice(0, 20);
+    p.f = data.format ?? 'xml';
+    if (data.profile) p.p = data.profile;
   }
   if (name === 'multi') p.n = Math.min(data.n ?? 0, 100);
   if (name === 'view') p.ref = data.ref;
@@ -87,5 +91,4 @@ export function trackCheck(ev: CheckEvent): void {
   }
 }
 
-export function trackPdf(): void { send(buildPayload('pdf')); }
 export function trackInterest(): void { send(buildPayload('interest')); }

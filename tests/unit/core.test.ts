@@ -5,13 +5,15 @@ import { cleanNaN } from '../../src/engine/visualize';
 import { plainTitle } from '../../src/explanations';
 import { decodeXml } from '../../src/files';
 import { parseEvent } from '../../shared/parse-event';
+import { amountVariants, compareWithPicture, dateVariants, isCalendarDate, keyFieldsFromCii } from '../../src/engine/consistency';
+import { profileOf } from '../../src/engine/pdf';
 // @ts-expect-error plain ESM build script
 import { minify } from '../../scripts/build-frame-helper.mjs';
 
 describe('event parsing (server whitelist)', () => {
   it('accepts a check event and keeps only known values', () => {
     const e = parseEvent(JSON.stringify({ e: 'check', s: 'invalid', x: 'cii', sample: false, ms: 812, r: ['BR-CO-16', 'XSD', '<script>', 'BR-DE-15'], extra: 'dropped' }));
-    expect(e).toEqual({ event: 'check', status: 'invalid', syntax: 'cii', sample: false, rules: 'BR-CO-16,XSD,BR-DE-15', ref: '', ms: 812, n: 0 });
+    expect(e).toEqual({ event: 'check', status: 'invalid', syntax: 'cii', sample: false, rules: 'BR-CO-16,XSD,BR-DE-15', ref: '', format: '', profile: '', ms: 812, n: 0 });
   });
   it('rejects non-objects and unknown events', () => {
     for (const body of ['null', '[]', '"x"', '{}', '{"e":"hack"}', 'not json']) expect(parseEvent(body)).toBeNull();
@@ -67,5 +69,50 @@ describe('frame helper', () => {
   it('inlined copy matches its source (CSP hash stays in sync)', () => {
     const src = fs.readFileSync('src/engine/frame-helper.src.js', 'utf8');
     expect(fs.readFileSync('src/engine/frame-helper.txt', 'utf8')).toBe(minify(src));
+  });
+});
+
+describe('ZUGFeRD profiles', () => {
+  it('maps guideline IDs to profiles', () => {
+    expect(profileOf('urn:factur-x.eu:1p0:minimum')).toBe('minimum');
+    expect(profileOf('urn:factur-x.eu:1p0:basicwl')).toBe('basic-wl');
+    expect(profileOf('urn:cen.eu:en16931:2017#compliant#urn:factur-x.eu:1p0:basic')).toBe('basic');
+    expect(profileOf('urn:cen.eu:en16931:2017')).toBe('en16931');
+    expect(profileOf('urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended')).toBe('extended');
+    expect(profileOf('urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0')).toBe('xrechnung');
+    expect(profileOf('urn:ferd:CrossIndustryDocument:invoice:1p0:basic')).toBe('zugferd1');
+    expect(profileOf(null)).toBe('unknown');
+  });
+});
+
+describe('picture vs XML', () => {
+  const xml = `<rsm:CrossIndustryInvoice><rsm:ExchangedDocument><ram:ID>RE-2026-042</ram:ID><ram:IssueDateTime><udt:DateTimeString format="102">20260915</udt:DateTimeString></ram:IssueDateTime></rsm:ExchangedDocument>
+    <ram:IBANID>DE02120300000000202051</ram:IBANID><ram:GrandTotalAmount>1234.50</ram:GrandTotalAmount><ram:DuePayableAmount>1234.50</ram:DuePayableAmount></rsm:CrossIndustryInvoice>`;
+  it('prints amounts and dates in common formats', () => {
+    expect(amountVariants('1234.5')).toEqual(expect.arrayContaining(['1.234,50', '1234,50', '1,234.50', '1234.50']));
+    expect(dateVariants('20260915')).toEqual(expect.arrayContaining(['15.09.2026', '2026-09-15']));
+  });
+  it('finds nothing to report when the picture shows the XML values', () => {
+    const text = 'Rechnung Nr. RE-2026-042 vom 15.09.2026 · Gesamt 1.234,50 € · IBAN DE02 1203 0000 0000 2020 51';
+    expect(compareWithPicture(xml, text)).toEqual([]);
+  });
+  it('warns about values missing from the picture', () => {
+    const text = 'Rechnung Nr. RE-2026-043 vom 15.09.2026 · Gesamt 999,00 € · IBAN DE02 1203 0000 0000 2020 51 lorem ipsum';
+    expect(compareWithPicture(xml, text).map((f) => f.code).sort()).toEqual(['PDF-XML-NR', 'PDF-XML-TOTAL']);
+  });
+  it('says when there is no readable text', () => {
+    expect(compareWithPicture(xml, '   ')[0].code).toBe('PDF-XML-NOTEXT');
+  });
+});
+
+describe('picture vs XML: edge cases found by the ZUGFeRD corpus', () => {
+  it('takes BT-1 only from directly inside ExchangedDocument', () => {
+    const noNr = '<rsm:ExchangedDocument><ram:TypeCode>380</ram:TypeCode></rsm:ExchangedDocument><ram:SellerTradeParty><ram:ID>123</ram:ID></ram:SellerTradeParty>';
+    expect(keyFieldsFromCii(noNr).find((f) => f.code === 'PDF-XML-NR')).toBeUndefined();
+  });
+  it('ignores impossible dates', () => {
+    expect(isCalendarDate('20261345')).toBe(false);
+    expect(isCalendarDate('20260230')).toBe(false);
+    expect(isCalendarDate('20240229')).toBe(true);
   });
 });

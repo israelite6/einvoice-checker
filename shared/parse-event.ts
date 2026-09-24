@@ -1,10 +1,12 @@
 // Pure validation of an event payload (unit-tested). Returns null for anything not whitelisted.
 
 const EVENTS = new Set(['view', 'check', 'interest', 'multi', 'pdf']);
-const STATUSES = new Set(['valid', 'valid-with-notes', 'invalid', 'unsupported', 'not-xml']);
+const STATUSES = new Set(['valid', 'valid-with-notes', 'invalid', 'unsupported', 'not-xml', 'pdf-no-xml', 'pdf-unreadable', 'profile-incomplete', 'profile-unsupported']);
+const FORMATS = new Set(['xml', 'pdf']);
+const PROFILES = new Set(['minimum', 'basic-wl', 'basic', 'en16931', 'xrechnung', 'extended', 'zugferd1', 'unknown']);
 const SYNTAXES = new Set(['ubl-invoice', 'ubl-creditnote', 'cii']);
 const REFS = new Set(['direct', 'internal', 'search', 'github', 'directory', 'other']);
-const RULE = /^(XSD|[A-Z]{2,4}(-[A-Z0-9]{1,6}){1,4})$/;
+const RULE = /^(XSD|[A-Z]{2,4}(-[A-Z0-9]{1,6}){1,4})$/;  // also matches PDF-XML-* codes
 
 export interface ParsedEvent {
   event: string;
@@ -13,6 +15,8 @@ export interface ParsedEvent {
   sample: boolean;
   rules: string;
   ref: string;
+  format: string;
+  profile: string;
   ms: number;
   n: number;
 }
@@ -32,6 +36,8 @@ export function parseEvent(text: string): ParsedEvent | null {
     sample: b.sample === true,
     rules: Array.isArray(b.r) ? b.r.map(String).filter((r) => RULE.test(r)).slice(0, 20).join(',') : '',
     ref: REFS.has(String(b.ref)) ? String(b.ref) : '',
+    format: FORMATS.has(String(b.f)) ? String(b.f) : '',
+    profile: PROFILES.has(String(b.p)) ? String(b.p) : '',
     ms: num(b.ms, 600_000),
     n: num(b.n, 100),
   };

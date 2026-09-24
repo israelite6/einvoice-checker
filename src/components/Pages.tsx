@@ -55,6 +55,7 @@ function Licences() {
     ['CEN/TC 434 EN 16931 validation artefacts', 'EUPL-1.2', 'https://github.com/ConnectingEurope/eInvoicing-EN16931'],
     ['SaxonJS 2.7 (Saxonica Ltd)', 'Saxonica licence (freeware, see below)', 'https://www.saxonica.com/saxonjs/'],
     ['xmllint-wasm / libxml2', 'MIT', 'https://github.com/noppa/xmllint-wasm'],
+    ['PDF.js (Mozilla)', 'Apache-2.0', 'https://mozilla.github.io/pdf.js/'],
     ['FileSaver.js (in the KoSIT visualization)', 'MIT', 'https://github.com/eligrey/FileSaver.js'],
     ['React, React DOM', 'MIT', 'https://react.dev'],
     ['Workbox (service worker, via vite-plugin-pwa)', 'MIT', 'https://github.com/GoogleChrome/workbox'],

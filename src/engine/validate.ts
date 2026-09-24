@@ -24,7 +24,8 @@ export const rulesUrl = (path: string) => `/rules/${path}?v=${__RULES_VERSION__}
 const tick = () => new Promise<void>((r) => setTimeout(r, 0));
 
 export interface ValidationResult {
-  status: 'valid' | 'valid-with-notes' | 'invalid' | 'unsupported' | 'not-xml';
+  status: 'valid' | 'valid-with-notes' | 'invalid' | 'unsupported' | 'not-xml'
+    | 'pdf-no-xml' | 'pdf-unreadable' | 'profile-incomplete' | 'profile-unsupported';
   scenario: string | null;
   syntax: 'ubl-invoice' | 'ubl-creditnote' | 'cii' | null;
   xsdValid: boolean | null;

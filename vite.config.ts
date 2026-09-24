@@ -29,7 +29,8 @@ export default defineConfig({
         // App shell is precached; rules and runtimes are cached on first use so checks work offline.
         globPatterns: ['**/*.{js,css,html,svg}', 'assets/*.wasm', 'assets/inter-latin-wght-*.woff2'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        globIgnores: ['rules/**', 'vendor/**', '_viztest.html'],
+        // pdf.js (~1.7 MB) is only needed for PDFs: cached on first use instead of for every visitor.
+        globIgnores: ['rules/**', 'vendor/**', '_viztest.html', 'assets/pdf*'],
         navigateFallbackDenylist: [/^\/api\//],
         // Cloudflare Pages redirects /index.html to / (308); precache the page under "/" instead.
         navigateFallback: '/',
@@ -43,6 +44,10 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         runtimeCaching: [{
+          urlPattern: ({ url }) => /^\/assets\/pdf[^/]*\.m?js$/.test(url.pathname),
+          handler: 'CacheFirst',
+          options: { cacheName: 'pdfjs', expiration: { maxEntries: 6 }, cacheableResponse: { statuses: [200] } },
+        }, {
           urlPattern: ({ url }) => url.pathname.startsWith('/rules/') || url.pathname.startsWith('/vendor/') || url.pathname.startsWith('/samples/'),
           handler: 'CacheFirst',
           options: { cacheName: `rules-${manifest.version}`, expiration: { maxEntries: 40, purgeOnQuotaError: true }, cacheableResponse: { statuses: [200] } },

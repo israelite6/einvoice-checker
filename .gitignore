@@ -32,3 +32,5 @@ playwright-report/
 .vscode/*
 !.vscode/extensions.json
 public/sw-cleanup.js
+spike/zugferd/corpus/
+spike/zugferd/manifest.json

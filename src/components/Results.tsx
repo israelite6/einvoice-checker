@@ -12,7 +12,7 @@ export interface FileResult {
   sample: boolean;
   state: 'checking' | 'done' | 'pdf' | 'engine-error' | 'too-large';
   step?: Step;
-  result?: ValidationResult;
+  result?: ValidationResult & { pdf?: { profile: string; attachment: string | null } };
   xml?: string;
 }
 
@@ -25,6 +25,7 @@ function tone(r: FileResult): Tone {
     case 'valid': return 'ok';
     case 'valid-with-notes': return 'warn';
     case 'invalid': return 'bad';
+    case 'profile-incomplete': return 'warn';
     default: return 'neutral';
   }
 }
@@ -88,6 +89,10 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'valid' ? t.statusValid
     : res?.status === 'valid-with-notes' ? t.statusValidNotes
     : res?.status === 'invalid' ? t.statusInvalid
+    : res?.status === 'pdf-no-xml' ? t.statusPdfNoXml
+    : res?.status === 'pdf-unreadable' ? t.statusPdfUnreadable
+    : res?.status === 'profile-incomplete' ? t.statusProfileIncomplete
+    : res?.status === 'profile-unsupported' ? t.statusProfileUnsupported
     : res?.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
   const body = r.state === 'engine-error' ? t.verdictEngine
     : r.state === 'too-large' ? t.verdictTooLarge
@@ -95,6 +100,10 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'valid' ? t.verdictValid
     : res?.status === 'valid-with-notes' ? t.verdictValidNotes
     : res?.status === 'invalid' ? t.verdictInvalid
+    : res?.status === 'pdf-no-xml' ? t.verdictPdfNoXml
+    : res?.status === 'pdf-unreadable' ? t.verdictPdfUnreadable
+    : res?.status === 'profile-incomplete' ? t.verdictProfileIncomplete
+    : res?.status === 'profile-unsupported' ? t.verdictProfileUnsupported
     : res?.status === 'not-xml' ? t.verdictNotXml : t.verdictUnsupported;
   const c = counts(res?.findings ?? []);
   return (
@@ -107,6 +116,9 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
         <p className="mt-1 text-slate-600 dark:text-slate-300">{body}</p>
         {r.state === 'engine-error' && onRetry && (
           <button type="button" onClick={onRetry} className="mt-3 min-h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">{t.retry}</button>
+        )}
+        {res?.pdf && res.pdf.profile !== 'unknown' && (
+          <p className="mt-3 text-xs"><span className="rounded-full bg-violet-100 px-2.5 py-1 font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-200">ZUGFeRD / Factur-X · {t.profile} {PROFILE_LABEL[res.pdf.profile] ?? res.pdf.profile}</span></p>
         )}
         {res?.scenario && (
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
@@ -121,6 +133,8 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     </div>
   );
 }
+
+const PROFILE_LABEL: Record<string, string> = { minimum: 'MINIMUM', 'basic-wl': 'BASIC WL', basic: 'BASIC', en16931: 'EN 16931', xrechnung: 'XRECHNUNG', extended: 'EXTENDED', zugferd1: 'ZUGFeRD 1' };
 
 const LEVEL_ORDER: Level[] = ['error', 'warning', 'information'];
 
@@ -168,13 +182,15 @@ function Findings({ findings }: { findings: Finding[] }) {
 export function ResultPanel({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
   const { t } = useI18n();
   const canView = r.state === 'done' && r.result?.syntax && r.xml;
+  // Profiles we do not check still get the readable view, but no findings tab (no verdict to show).
+  const viewOnly = Boolean(canView && !r.result?.scenario);
   // Until the user picks a tab, invalid invoices open on the findings and valid ones on the invoice.
   const [chosen, setTab] = useState<'view' | 'findings' | null>(null);
   const [printer, setPrinter] = useState<(() => void) | null>(null);
   // Stable card height from the start of a check through the verdict, so content below does not jump (CLS).
-  const reserve = r.state === 'checking' || (r.state === 'done' && Boolean(r.result?.scenario));
+  const reserve = r.state === 'checking' || (r.state === 'done' && Boolean(r.result?.scenario || canView));
   const tab = chosen ?? (r.result?.status === 'invalid' ? 'findings' : 'view');
-  const active = canView ? tab : 'findings';
+  const active = viewOnly ? 'view' : canView ? tab : 'findings';
 
   return (
     <article className={`animate-rise overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 ${reserve ? 'min-h-[70vh]' : ''}`}>
@@ -191,10 +207,10 @@ export function ResultPanel({ r, onRetry }: { r: FileResult; onRetry?: () => voi
           <div className="p-5 sm:p-7"><div className="h-160 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" /></div>
         </div>
       )}
-      {r.state === 'done' && r.result?.scenario && (
+      {r.state === 'done' && (r.result?.scenario || viewOnly) && (
         <div className="border-t border-slate-200 dark:border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4 sm:px-7">
-            {canView && (
+            {canView && !viewOnly && (
               <div role="tablist" aria-label={t.tabView} className="inline-flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
                 {(['view', 'findings'] as const).map((id) => (
                   <button

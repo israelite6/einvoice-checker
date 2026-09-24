@@ -26,7 +26,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   env.EVENTS?.writeDataPoint({
     indexes: [ev.event],
-    blobs: [ev.event, ev.status, ev.syntax, ev.sample ? 'sample' : 'user', cf?.country ?? '', ev.rules, bot, ev.ref, String(cf?.asn ?? ''), deployment],
+    blobs: [ev.event, ev.status, ev.syntax, ev.sample ? 'sample' : 'user', cf?.country ?? '', ev.rules, bot, ev.ref, String(cf?.asn ?? ''), deployment, ev.format, ev.profile],
     doubles: [ev.ms, ev.n],
   });
   return new Response(null, { status: 204 });

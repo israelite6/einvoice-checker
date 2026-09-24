@@ -49,9 +49,11 @@ jobs:
         working-directory: .
         run: npm ci && npm run rules && npm run build && npx playwright install --with-deps chromium
       # (rules download is retried and checksum-verified in scripts/build-rules.mjs)
-      - name: Shipped-engine parity (browser)
+      - name: Shipped-engine parity (browser): XML and ZUGFeRD/Factur-X PDFs
         working-directory: .
         run: |
+          node spike/zugferd/make-corpus.mjs
           npx wrangler pages dev dist --port 8788 > /tmp/wrangler.log 2>&1 &
           npx wait-on -t 120000 http://localhost:8788 || (cat /tmp/wrangler.log; exit 1)
           npm run test:parity
+          node scripts/parity-zugferd.mjs

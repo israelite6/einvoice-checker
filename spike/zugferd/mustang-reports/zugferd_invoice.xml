@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<validation filename="zugferd_invoice.pdf" datetime="2026-09-24 19:22:39">
+  <pdf>ValidationResult [flavour=3b, totalAssertions=2840, assertions=[], isCompliant=true]
+    <info>
+      <signature>unknown</signature>
+      <duration unit="ms">794</duration>
+    </info>
+    <summary status="valid"/>
+  </pdf>  
+  <xml>
+    <info>
+      <version>1</version>
+      <profile>urn:ferd:CrossIndustryDocument:invoice:1p0:basic</profile>
+      <validator version="2.26.0"/>
+      <rules>
+        <fired>77</fired>
+        <failed>0</failed>
+      </rules>
+      <duration unit="ms">2408</duration>
+    </info>
+    <messages>
+      <warning type="10">Arithmetical issue:Payable total in XML is 1005.55, but calculated total is 0.00 with tax basis 0.00 and with positions 0.00 = 0.00 + 0.00 + 0.00 + 0.00 + 0.00 + 0.00 + 0.00</warning> 
+    </messages>
+    <summary status="valid"/>
+  </xml>
+  <messages></messages>
+  <summary status="valid"/>
+</validation>
+
