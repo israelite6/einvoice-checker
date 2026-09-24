@@ -17,6 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm test
       - run: npm run rules
       - run: npm run build
       - run: npx playwright install --with-deps chromium
@@ -26,6 +27,7 @@ jobs:
   parity:
     # Heavy job: weekly, on manual dispatch, and when the rules or engine change (finance-check-r1).
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[parity]')
+    # (also run it whenever rules/engine change; see the paths filter in the rules job note)
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults: { run: { working-directory: spike } }
@@ -37,3 +39,13 @@ jobs:
         with: { distribution: temurin, java-version: '21' }
       - run: npm ci
       - run: ./run-parity.sh
+      # Parity of the shipped engine: the built app's validator in Chromium over the same 678 files.
+      - name: Build app
+        working-directory: .
+        run: npm ci && npm run rules && npm run build && npx playwright install --with-deps chromium
+      - name: Shipped-engine parity (browser)
+        working-directory: .
+        run: |
+          npx wrangler pages dev dist --port 8788 > /tmp/wrangler.log 2>&1 &
+          npx wait-on -t 120000 http://localhost:8788 || (cat /tmp/wrangler.log; exit 1)
+          npm run test:parity

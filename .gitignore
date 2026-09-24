@@ -31,3 +31,4 @@ playwright-report/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+public/sw-cleanup.js

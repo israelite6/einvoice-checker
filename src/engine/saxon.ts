@@ -25,11 +25,13 @@ export function saxon(): Promise<SaxonJSApi> {
   if (window.SaxonJS) return Promise.resolve(window.SaxonJS);
   loading ??= new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = '/vendor/SaxonJS2.rt.js';
+    s.src = `/vendor/SaxonJS2.rt.js?v=${__RULES_VERSION__}`;
     s.async = true;
     s.onload = () => (window.SaxonJS ? resolve(window.SaxonJS) : reject(new Error('SaxonJS failed to initialise')));
-    s.onerror = () => reject(new Error('SaxonJS failed to load'));
+    s.onerror = () => { s.remove(); reject(new Error('SaxonJS failed to load')); };
     document.head.appendChild(s);
   });
+  // A failed load must not be cached: the next check retries (e.g. after reconnecting).
+  loading.catch(() => { loading = null; });
   return loading;
 }

@@ -18,7 +18,7 @@ export function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: 
             type="button"
             onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
             aria-label={t.langSwitchLabel}
-            className="h-10 rounded-lg px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+            className="h-11 rounded-lg px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
           >
             <span lang={lang === 'de' ? 'en' : 'de'}>{t.langSwitch}</span>
           </button>
@@ -27,7 +27,7 @@ export function Header({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: 
             onClick={onToggleTheme}
             aria-label={theme === 'dark' ? t.themeToLight : t.themeToDark}
             title={theme === 'dark' ? t.themeToLight : t.themeToDark}
-            className="relative grid size-10 place-items-center overflow-hidden rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+            className="relative grid size-11 place-items-center overflow-hidden rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
           >
             <IconSun className={`absolute size-5 transition-all duration-500 ${theme === 'dark' ? 'rotate-0 scale-100 opacity-100' : 'rotate-90 scale-0 opacity-0'}`} />
             <IconMoon className={`absolute size-5 transition-all duration-500 ${theme === 'dark' ? '-rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`} />

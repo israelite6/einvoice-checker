@@ -16,15 +16,22 @@
     <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script src="/theme-init.js"></script>
+    <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "E-Rechnung prüfen", "applicationCategory": "BusinessApplication", "operatingSystem": "Web", "url": "https://e-rechnung-pruefen.pages.dev/", "inLanguage": ["de", "en"], "description": "XRechnung prüfen und lesbar machen – kostenlos, ohne Anmeldung, ohne Upload. Prüft Schema, EN 16931 und XRechnung-Regeln direkt im Browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Wird meine Rechnung hochgeladen?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Die Datei wird ausschließlich in Ihrem Browser gelesen, geprüft und dargestellt. Es gibt keinen Server, der Rechnungen empfängt."}}, {"@type": "Question", "name": "Welche Regeln werden geprüft?", "acceptedAnswer": {"@type": "Answer", "text": "Das XML-Schema, die Geschäftsregeln der europäischen Norm EN 16931 und die nationalen XRechnung-Regeln – mit den offiziell veröffentlichten Prüfregeln (KoSIT-Prüfkonfiguration)."}}, {"@type": "Question", "name": "Was ist der Unterschied zwischen XRechnung und ZUGFeRD?", "acceptedAnswer": {"@type": "Answer", "text": "XRechnung ist eine reine XML-Datei (Syntax UBL oder CII). ZUGFeRD ist ein PDF mit eingebetteter XML-Datei. Bei hybriden Rechnungen ist laut Bundesfinanzministerium der XML-Teil maßgeblich."}}, {"@type": "Question", "name": "Ist „gültig“ eine rechtliche Bestätigung?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Wir prüfen technisch gegen die veröffentlichten Regeln. Ob eine Rechnung steuerlich korrekt ist, hängt vom Einzelfall ab."}}, {"@type": "Question", "name": "Was kostet das?", "acceptedAnswer": {"@type": "Answer", "text": "Nichts. Keine Anmeldung, kein Konto, keine Begrenzung für einzelne Prüfungen."}}]}]</script>
   </head>
   <body>
     <div id="root">
-      <noscript>
-        <main style="max-width:40rem;margin:4rem auto;padding:0 1rem;font-family:system-ui,sans-serif">
-          <h1>E-Rechnung prüfen und lesbar machen</h1>
-          <p>Dieses kostenlose Werkzeug prüft XRechnungen (UBL und CII) gegen die offiziellen Regeln und stellt sie lesbar dar – vollständig im Browser, ohne Upload. Bitte aktivieren Sie JavaScript.</p>
-        </main>
-      </noscript>
+      <!-- Prerendered text for search engines and no-JS visitors; React replaces it on load. -->
+      <main style="max-width:48rem;margin:0 auto;padding:4rem 1rem;font-family:system-ui,sans-serif">
+        <h1>E-Rechnung prüfen und lesbar machen</h1>
+        <p>XRechnung öffnen, als normale Rechnung ansehen, drucken und gegen die offiziellen Regeln prüfen. Kostenlos, ohne Anmeldung. Ihre Rechnung verlässt Ihr Gerät nicht: Die Prüfung läuft vollständig im Browser.</p>
+        <noscript><p><strong>Bitte aktivieren Sie JavaScript, um Rechnungen zu prüfen.</strong></p></noscript>
+        <h2>Häufige Fragen</h2>
+        <h3>Wird meine Rechnung hochgeladen?</h3><p>Nein. Die Datei wird ausschließlich in Ihrem Browser gelesen, geprüft und dargestellt. Es gibt keinen Server, der Rechnungen empfängt.</p>
+        <h3>Welche Regeln werden geprüft?</h3><p>Das XML-Schema, die Geschäftsregeln der europäischen Norm EN 16931 und die nationalen XRechnung-Regeln – mit den offiziell veröffentlichten Prüfregeln (KoSIT-Prüfkonfiguration).</p>
+        <h3>Was ist der Unterschied zwischen XRechnung und ZUGFeRD?</h3><p>XRechnung ist eine reine XML-Datei (Syntax UBL oder CII). ZUGFeRD ist ein PDF mit eingebetteter XML-Datei. Bei hybriden Rechnungen ist laut Bundesfinanzministerium der XML-Teil maßgeblich.</p>
+        <h3>Ist „gültig“ eine rechtliche Bestätigung?</h3><p>Nein. Wir prüfen technisch gegen die veröffentlichten Regeln. Ob eine Rechnung steuerlich korrekt ist, hängt vom Einzelfall ab.</p>
+        <h3>Was kostet das?</h3><p>Nichts. Keine Anmeldung, kein Konto, keine Begrenzung für einzelne Prüfungen.</p>
+      </main>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

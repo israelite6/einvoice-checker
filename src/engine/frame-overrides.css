@@ -1,0 +1,10 @@
+/* Overrides for the official KoSIT viewer, injected into the sandboxed invoice view.
+   The official tab buttons have fixed heights; when the tab bar wraps on narrow screens the
+   first row overlaps the second, so "Anlagen" could not be tapped. Wrap cleanly instead. */
+.menue .innen { display: flex; flex-wrap: wrap; align-items: stretch; column-gap: 8px; row-gap: 2px; padding: 4px 8px; }
+.menue .innen div { margin: 0 8px; }
+.menue .innen button { height: auto; min-height: 44px; padding: 6px 0; }
+@media screen and (max-width: 800px) {
+  .btnAktiv:after { display: none; }
+  .btnAktiv span { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+}

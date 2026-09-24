@@ -16,18 +16,17 @@ const inline = [
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'wasm-unsafe-eval' ${inline.map(hash).join(' ')} https://static.cloudflareinsights.com`,
+  `script-src 'self' 'wasm-unsafe-eval' ${inline.map(hash).join(' ')}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self' https://cloudflareinsights.com",
-  "worker-src 'self' blob:",
-  "frame-src 'self' blob: data:",
+  "connect-src 'self'",
+  "worker-src 'self'",
+  "frame-src 'self'",
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'none'",
   "frame-ancestors 'none'",
-  'upgrade-insecure-requests',
 ].join('; ');
 
 const headers = `/*
@@ -46,6 +45,9 @@ const headers = `/*
 
 /vendor/*
   Cache-Control: public, max-age=86400
+
+/sw.js
+  Cache-Control: no-cache
 `;
 
 fs.writeFileSync(path.join(ROOT, 'dist/_headers'), headers);

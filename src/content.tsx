@@ -57,13 +57,18 @@ export const PRIVACY: Record<Lang, ReactNode> = {
       <h2>Ihre Rechnungsdateien</h2>
       <p>Rechnungen, die Sie auswählen, werden ausschließlich lokal in Ihrem Browser verarbeitet. Sie werden nicht an uns oder Dritte übertragen und nicht gespeichert.</p>
       <h2>Hosting</h2>
-      <p>Die Website wird über Cloudflare Pages (Cloudflare, Inc., USA) ausgeliefert. Dabei verarbeitet Cloudflare technisch notwendige Verbindungsdaten wie die IP-Adresse, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren Betrieb). Cloudflare ist nach dem EU-U.S. Data Privacy Framework zertifiziert.</p>
-      <h2>Reichweitenmessung ohne Cookies</h2>
-      <p>Wir nutzen Cloudflare Web Analytics, um Seitenaufrufe aggregiert zu zählen, sowie eigene anonyme Ereignisse (z. B. „Prüfung abgeschlossen“, Ergebnisart, Dateiformat, Kennungen verletzter Regeln). Es werden keine Cookies gesetzt, keine Geräte-Kennungen gespeichert und keine Rechnungsinhalte, Dateinamen, Beträge oder Personendaten übermittelt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Verbesserung des Angebots).</p>
+      <p>Die Website wird über Cloudflare Pages (Cloudflare, Inc., USA, als Auftragsverarbeiter) ausgeliefert. Dabei verarbeitet Cloudflare technisch notwendige Verbindungsdaten wie die IP-Adresse, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren Betrieb). Cloudflare ist nach dem EU-U.S. Data Privacy Framework zertifiziert.</p>
+      <h2>Anonyme Nutzungsstatistik ohne Cookies</h2>
+      <p>Um zu verstehen, ob das Werkzeug genutzt wird, sendet die Seite anonyme Ereignisse an unseren Server bei Cloudflare: Seitenaufruf (mit grober Herkunftskategorie wie „Suchmaschine“ oder „direkt“), abgeschlossene Prüfung (Ergebnisart, Dateiformat, Kennungen verletzter Regeln, Dauer, ob eine Beispieldatei genutzt wurde), PDF-Auswahl, Mehrfachprüfung und Klick auf „interessiert mich“. Cloudflare ermittelt dabei aus der IP-Adresse das Land und die Netzbetreiber-Nummer (ASN); aus dem Browsertyp wird markiert, ob es sich wahrscheinlich um einen Bot handelt. Die IP-Adresse selbst wird von uns nicht gespeichert. Es werden keine Cookies gesetzt, keine Geräte-Kennungen gespeichert und keine Rechnungsinhalte, Dateinamen, Beträge oder Personendaten übermittelt.</p>
+      <p>Speicherung: in Cloudflare Workers Analytics Engine (Cloudflare, Inc. als Auftragsverarbeiter), dort drei Monate. Für die Auswertung unseres Tests bewahren wir nur zusammengefasste Wochenzahlen ohne Personenbezug auf. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Verbesserung und Bewertung des Angebots).</p>
+      <h2>Kontakt per E-Mail</h2>
+      <p>Wenn Sie uns schreiben (z. B. um ein falsches Prüfergebnis zu melden), verarbeiten wir Ihre E-Mail-Adresse und Nachricht nur, um zu antworten und den Fehler zu beheben. Wir löschen die Korrespondenz 12 Monate nach Abschluss, sofern keine Aufbewahrungspflicht besteht. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Bitte senden Sie keine Rechnungen mit personenbezogenen Daten, ohne diese vorher zu schwärzen.</p>
+      <h2>Server-Protokolle</h2>
+      <p>Wir selbst werten keine Server-Protokolle aus und speichern keine IP-Adressen.</p>
       <h2>Lokale Einstellungen</h2>
       <p>Wenn Sie Sprache oder Farbschema ändern, wird diese Auswahl auf Ihrem Gerät gespeichert, damit sie beim nächsten Besuch erhalten bleibt. Diese Speicherung ist für die von Ihnen gewünschte Funktion erforderlich und wird nicht an uns übertragen.</p>
       <h2>Ihre Rechte</h2>
-      <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Kontakt: {mail}</p>
+      <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. <strong>Widerspruchsrecht (Art. 21 DSGVO):</strong> Sie können der Verarbeitung auf Grundlage berechtigter Interessen jederzeit widersprechen; die anonyme Statistik können Sie unten jederzeit abschalten. Wir respektieren außerdem die Browser-Signale „Global Privacy Control“ und „Do Not Track“ und senden dann keine Statistik. Kontakt: {mail}</p>
     </>
   ),
   en: (
@@ -74,13 +79,18 @@ export const PRIVACY: Record<Lang, ReactNode> = {
       <h2>Your invoice files</h2>
       <p>Invoices you select are processed only locally in your browser. They are not transmitted to us or third parties and are not stored.</p>
       <h2>Hosting</h2>
-      <p>The website is delivered via Cloudflare Pages (Cloudflare, Inc., USA). Cloudflare processes technically necessary connection data such as the IP address to deliver the site and protect it against abuse. Legal basis: Art. 6(1)(f) GDPR (legitimate interest in secure operation). Cloudflare is certified under the EU-U.S. Data Privacy Framework.</p>
-      <h2>Cookieless analytics</h2>
-      <p>We use Cloudflare Web Analytics to count page views in aggregate, plus our own anonymous events (e.g. "check completed", result type, file format, IDs of failed rules). No cookies are set, no device identifiers are stored, and no invoice content, file names, amounts or personal data are transmitted. Legal basis: Art. 6(1)(f) GDPR (improving the service).</p>
+      <p>The website is delivered via Cloudflare Pages (Cloudflare, Inc., USA, as processor). Cloudflare processes technically necessary connection data such as the IP address to deliver the site and protect it against abuse. Legal basis: Art. 6(1)(f) GDPR (legitimate interest in secure operation). Cloudflare is certified under the EU-U.S. Data Privacy Framework.</p>
+      <h2>Anonymous usage statistics without cookies</h2>
+      <p>To understand whether the tool is used, the page sends anonymous events to our server at Cloudflare: page view (with a coarse origin category such as "search engine" or "direct"), completed check (result type, file format, IDs of failed rules, duration, whether a sample file was used), PDF selection, multiple checks and a click on "I am interested". Cloudflare derives the country and the network operator number (ASN) from the IP address; the browser type is used to flag likely bots. We do not store the IP address itself. No cookies are set, no device identifiers are stored, and no invoice content, file names, amounts or personal data are transmitted.</p>
+      <p>Storage: Cloudflare Workers Analytics Engine (Cloudflare, Inc. as processor), for three months. For evaluating our test we keep only aggregated weekly figures without personal data. Legal basis: Art. 6(1)(f) GDPR (improving and evaluating the service).</p>
+      <h2>Contact by e-mail</h2>
+      <p>If you write to us (for example to report a wrong result), we process your e-mail address and message only to reply and fix the problem. We delete the correspondence 12 months after it ends unless we are legally required to keep it. Legal basis: Art. 6(1)(f) GDPR. Please do not send invoices containing personal data without redacting them first.</p>
+      <h2>Server logs</h2>
+      <p>We do not analyse server logs and do not store IP addresses.</p>
       <h2>Local settings</h2>
       <p>If you change the language or colour theme, the choice is stored on your device so it is kept on your next visit. This storage is required for the function you requested and is not transmitted to us.</p>
       <h2>Your rights</h2>
-      <p>You have the right to access, rectification, erasure, restriction, data portability and objection (Art. 15–21 GDPR) and the right to lodge a complaint with a data protection supervisory authority. Contact: {mail}</p>
+      <p>You have the right to access, rectification, erasure, restriction, data portability and objection (Art. 15–21 GDPR) and the right to lodge a complaint with a data protection supervisory authority. <strong>Right to object (Art. 21 GDPR):</strong> you can object at any time to processing based on legitimate interests; you can switch the anonymous statistics off below at any time. We also respect the browser signals Global Privacy Control and Do Not Track and send no statistics when they are set. Contact: {mail}</p>
     </>
   ),
 };

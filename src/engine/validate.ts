@@ -7,10 +7,21 @@ export type Level = 'error' | 'warning' | 'information';
 
 export interface Finding {
   code: string;
+  /** Severity after the scenario's customLevel overrides (drives the verdict and the UI). */
   level: Level;
+  /** The rule's own severity, as the official KoSIT report lists it (used for parity tests). */
+  rawLevel: Level;
   text: string;
   location?: string;
 }
+
+/** The checker itself could not load (network/offline), as opposed to a problem with the user's file. */
+export class EngineError extends Error {}
+
+/** Versioned URL for rule files, so returning users receive rule updates (cache key changes per release). */
+export const rulesUrl = (path: string) => `/rules/${path}?v=${__RULES_VERSION__}`;
+
+const tick = () => new Promise<void>((r) => setTimeout(r, 0));
 
 export interface ValidationResult {
   status: 'valid' | 'valid-with-notes' | 'invalid' | 'unsupported' | 'not-xml';
@@ -41,8 +52,8 @@ let config: Promise<{ scenarios: Scenario[]; xsd: XsdFile[] }> | null = null;
 async function loadConfig() {
   const S = await saxon();
   const [scenariosXml, xsd] = await Promise.all([
-    fetch('/rules/scenarios.xml').then((r) => r.text()),
-    fetch('/rules/xsd.json').then((r) => r.json() as Promise<XsdFile[]>),
+    fetch(rulesUrl('scenarios.xml')).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.text(); }),
+    fetch(rulesUrl('xsd.json')).then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<XsdFile[]>; }),
   ]);
   const doc = await S.getResource({ text: scenariosXml, type: 'xml' });
   const ev = (xp: string, ctx: unknown) => S.XPath.evaluate(xp, ctx, { namespaceContext: SCN, resultForm: 'array' }) as SaxonNode[];
@@ -59,12 +70,16 @@ async function loadConfig() {
 }
 
 /** Starts loading the engine in the background so the first check is fast. */
-export function warmUp(): void {
-  config ??= loadConfig();
+export function warmUp(): Promise<unknown> {
+  if (!config) {
+    config = loadConfig();
+    config.catch(() => { config = null; });
+  }
+  return config;
 }
 
 function sefUrl(xslLocation: string): string {
-  return '/rules/validation/' + xslLocation.split('/').pop()!.replace(/\.xsl$/, '.sef.json');
+  return rulesUrl('validation/' + xslLocation.split('/').pop()!.replace(/\.xsl$/, '.sef.json'));
 }
 
 function syntaxOf(scenarioName: string): ValidationResult['syntax'] {
@@ -77,9 +92,15 @@ export type Step = 'schema' | 'en16931' | 'xrechnung';
 
 export async function validateInvoice(xmlText: string, onStep?: (step: Step) => void): Promise<ValidationResult> {
   const t0 = performance.now();
-  const S = await saxon();
-  warmUp();
-  const { scenarios, xsd } = await config!;
+  let S: Awaited<ReturnType<typeof saxon>>;
+  let scenarios: Scenario[];
+  let xsd: XsdFile[];
+  try {
+    S = await saxon();
+    ({ scenarios, xsd } = await (warmUp() as NonNullable<typeof config>));
+  } catch (e) {
+    throw new EngineError(String(e));
+  }
   const done = (r: Omit<ValidationResult, 'ms'>): ValidationResult => ({ ...r, ms: Math.round(performance.now() - t0) });
 
   let doc: unknown;
@@ -92,8 +113,14 @@ export async function validateInvoice(xmlText: string, onStep?: (step: Step) => 
   if (!scenario) return done({ status: 'unsupported', scenario: null, syntax: null, xsdValid: null, findings: [] });
 
   onStep?.('schema');
+  await tick();
   // Loaded on demand; the package brings its own Web Worker and wasm binary (bundled by Vite).
-  const { validateXML } = await import('xmllint-wasm');
+  let validateXML: typeof import('xmllint-wasm').validateXML;
+  try {
+    ({ validateXML } = await import('xmllint-wasm'));
+  } catch (e) {
+    throw new EngineError(String(e));
+  }
   const schemaResult = await validateXML({
     xml: [{ fileName: 'invoice.xml', contents: xmlText }],
     schema: [xsd.find((f) => f.fileName === scenario.xsd)!],
@@ -103,19 +130,29 @@ export async function validateInvoice(xmlText: string, onStep?: (step: Step) => 
   const findings: Finding[] = [];
   if (!schemaResult.valid) {
     for (const e of schemaResult.errors) {
-      findings.push({ code: 'XSD', level: 'error', text: e.message, location: e.loc ? `Zeile ${e.loc.lineNumber}` : undefined });
+      findings.push({ code: 'XSD', level: 'error', rawLevel: 'error', text: e.message, location: e.loc ? `line ${e.loc.lineNumber}` : undefined });
     }
   } else {
     // The official validator runs schematron only on schema-valid documents.
     for (const loc of scenario.schematron) {
       onStep?.(loc.includes('XRechnung') ? 'xrechnung' : 'en16931');
-      const res = await S.transform({ stylesheetLocation: sefUrl(loc), sourceText: xmlText, destination: 'document' }, 'async');
+      await tick();
+      let res: { principalResult: unknown };
+      try {
+        res = await S.transform({ stylesheetLocation: sefUrl(loc), sourceText: xmlText, destination: 'document' }, 'async');
+      } catch (e) {
+        // A rule file that fails to load is an engine problem, never a verdict about the user's file.
+        if (/fetch|network|load|404|Failed/i.test(String(e))) throw new EngineError(String(e));
+        throw e;
+      }
       const nodes = S.XPath.evaluate('//svrl:failed-assert | //svrl:successful-report', res.principalResult, { namespaceContext: SVRL, resultForm: 'array' }) as SaxonNode[];
       for (const n of nodes) {
         const code = n.getAttribute('id') ?? '?';
+        const rawLevel = SVRL_LEVEL[n.getAttribute('flag') ?? ''] ?? 'error';
         findings.push({
           code,
-          level: scenario.customLevels[code] ?? SVRL_LEVEL[n.getAttribute('flag') ?? ''] ?? 'error',
+          level: scenario.customLevels[code] ?? rawLevel,
+          rawLevel,
           text: String(S.XPath.evaluate('normalize-space(svrl:text)', n, { namespaceContext: SVRL })),
           location: n.getAttribute('location') ?? undefined,
         });

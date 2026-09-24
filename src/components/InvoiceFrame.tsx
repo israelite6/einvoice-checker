@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ValidationResult } from '../engine/validate';
 import { renderInvoice } from '../engine/visualize';
 import helper from '../engine/frame-helper.txt?raw';
+import overrides from '../engine/frame-overrides.css?raw';
 import { useI18n } from '../i18n';
 
 // The official HTML view is shown in a sandboxed iframe: its scripts run in an opaque origin,
@@ -25,7 +26,7 @@ export function InvoiceFrame({ xml, syntax, onPrintReady }: {
   useEffect(() => {
     let alive = true;
     renderInvoice(xml, syntax, lang)
-      .then((h) => { if (alive) setOut({ key: `${lang}:${syntax}:${xml.length}`, html: h.replace('</body>', `<script>${helper}</script></body>`) }); })
+      .then((h) => { if (alive) setOut({ key: `${lang}:${syntax}:${xml.length}`, html: h.replace('</head>', `<style>${overrides}</style></head>`).replace('</body>', `<script>${helper}</script></body>`) }); })
       .catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };
   }, [xml, syntax, lang]);

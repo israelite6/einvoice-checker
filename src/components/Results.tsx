@@ -9,7 +9,7 @@ export interface FileResult {
   id: string;
   name: string;
   sample: boolean;
-  state: 'checking' | 'done' | 'pdf';
+  state: 'checking' | 'done' | 'pdf' | 'engine-error' | 'too-large';
   step?: Step;
   result?: ValidationResult;
   xml?: string;
@@ -18,7 +18,8 @@ export interface FileResult {
 type Tone = 'ok' | 'warn' | 'bad' | 'neutral';
 
 function tone(r: FileResult): Tone {
-  if (r.state === 'pdf') return 'neutral';
+  if (r.state === 'engine-error') return 'warn';
+  if (r.state !== 'done') return 'neutral';
   switch (r.result?.status) {
     case 'valid': return 'ok';
     case 'valid-with-notes': return 'warn';
@@ -50,7 +51,7 @@ function Progress({ step }: { step?: Step }) {
   ];
   const idx = step ? steps.findIndex((s) => s.id === step) : -1;
   return (
-    <div className="animate-fade" role="status" aria-live="polite">
+    <div className="animate-fade">
       <p className="font-semibold">{idx < 0 ? t.loadingEngine : t.checking}</p>
       <p className="text-sm text-slate-500 dark:text-slate-400">{t.checkingDetail}</p>
       <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
@@ -75,37 +76,44 @@ function counts(findings: Finding[]) {
   };
 }
 
-function Verdict({ r }: { r: FileResult }) {
-  const { t } = useI18n();
+function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
+  const { t, lang } = useI18n();
   const tn = tone(r);
   const st = TONE_STYLES[tn];
   const res = r.result;
-  const title = r.state === 'pdf' ? t.statusPdf
+  const title = r.state === 'engine-error' ? t.statusEngine
+    : r.state === 'too-large' ? t.tooLarge
+    : r.state === 'pdf' ? t.statusPdf
     : res?.status === 'valid' ? t.statusValid
     : res?.status === 'valid-with-notes' ? t.statusValidNotes
     : res?.status === 'invalid' ? t.statusInvalid
     : res?.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
-  const body = r.state === 'pdf' ? t.verdictPdf
+  const body = r.state === 'engine-error' ? t.verdictEngine
+    : r.state === 'too-large' ? t.verdictTooLarge
+    : r.state === 'pdf' ? t.verdictPdf
     : res?.status === 'valid' ? t.verdictValid
     : res?.status === 'valid-with-notes' ? t.verdictValidNotes
     : res?.status === 'invalid' ? t.verdictInvalid
     : res?.status === 'not-xml' ? t.verdictNotXml : t.verdictUnsupported;
   const c = counts(res?.findings ?? []);
   return (
-    <div className="flex items-start gap-4" role="status" aria-live="polite">
+    <div className="flex items-start gap-4">
       <div className={`grid size-14 shrink-0 animate-pop place-items-center rounded-2xl ${st.ring}`}>
         <StatusIcon t={tn} className="size-7" />
       </div>
       <div className="min-w-0 flex-1">
         <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
         <p className="mt-1 text-slate-600 dark:text-slate-300">{body}</p>
+        {r.state === 'engine-error' && onRetry && (
+          <button type="button" onClick={onRetry} className="mt-3 min-h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">{t.retry}</button>
+        )}
         {res?.scenario && (
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
             {c.error > 0 && <span className="rounded-full bg-rose-100 px-2.5 py-1 font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{c.error} {c.error === 1 ? t.error1 : t.errors}</span>}
             {c.warning > 0 && <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">{c.warning} {c.warning === 1 ? t.warning1 : t.warnings}</span>}
             {c.information > 0 && <span className="rounded-full bg-sky-100 px-2.5 py-1 font-medium text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">{c.information} {c.information === 1 ? t.info1 : t.infos}</span>}
             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-600 dark:bg-slate-800 dark:text-slate-300">{res.scenario}</span>
-            <span className="text-slate-500 dark:text-slate-400">{t.checkedIn} {(res.ms / 1000).toFixed(1)} s</span>
+            <span className="text-slate-500 dark:text-slate-400">{t.checkedIn} {(res.ms / 1000).toLocaleString(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} {t.seconds}</span>
           </div>
         )}
       </div>
@@ -115,8 +123,9 @@ function Verdict({ r }: { r: FileResult }) {
 
 const LEVEL_ORDER: Level[] = ['error', 'warning', 'information'];
 
-function shortLocation(loc?: string): string | undefined {
+export function shortLocation(loc?: string): string | undefined {
   if (!loc) return undefined;
+  if (loc.startsWith('line ')) return loc;
   const parts = loc.replace(/Q\{[^}]*\}/g, '').replace(/\*:/g, '').split('/').filter(Boolean);
   return parts.slice(-3).join(' › ').replace(/\[1\]/g, '');
 }
@@ -148,7 +157,7 @@ function Findings({ findings }: { findings: Finding[] }) {
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{t.officialText}</p>
                     <p className="mt-1 text-slate-700 dark:text-slate-300">{f.text}</p>
                     {f.location && (
-                      <p className="mt-3 text-xs text-slate-500 dark:text-slate-400"><span className="font-semibold">{t.where}:</span> <span className="break-all font-mono">{shortLocation(f.location)}</span></p>
+                      <p className="mt-3 text-xs text-slate-500 dark:text-slate-400"><span className="font-semibold">{t.where}:</span> <span className="break-all font-mono">{shortLocation(f.location)?.replace(/^line /, `${t.line} `)}</span></p>
                     )}
                   </div>
                 </details>
@@ -161,7 +170,7 @@ function Findings({ findings }: { findings: Finding[] }) {
   );
 }
 
-export function ResultPanel({ r }: { r: FileResult }) {
+export function ResultPanel({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
   const { t } = useI18n();
   const canView = r.state === 'done' && r.result?.syntax && r.xml;
   // Until the user picks a tab, invalid invoices open on the findings and valid ones on the invoice.
@@ -175,7 +184,7 @@ export function ResultPanel({ r }: { r: FileResult }) {
       <div className={`h-1 ${r.state === 'checking' ? 'bg-brand-500' : TONE_STYLES[tone(r)].bar}`} />
       <div className="p-5 sm:p-7">
         <p className="mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"><IconFile className="size-4" /><span className="truncate">{r.name}</span></p>
-        {r.state === 'checking' ? <Progress step={r.step} /> : <Verdict r={r} />}
+        {r.state === 'checking' ? <Progress step={r.step} /> : <Verdict r={r} onRetry={onRetry} />}
       </div>
       {r.state === 'done' && r.result?.scenario && (
         <div className="border-t border-slate-200 dark:border-slate-800">
@@ -185,11 +194,20 @@ export function ResultPanel({ r }: { r: FileResult }) {
                 {(['view', 'findings'] as const).map((id) => (
                   <button
                     key={id}
+                    id={`tab-${r.id}-${id}`}
                     role="tab"
                     type="button"
                     aria-selected={active === id}
+                    aria-controls={`panel-${r.id}`}
+                    tabIndex={active === id ? 0 : -1}
                     onClick={() => setTab(id)}
-                    className={`min-h-10 rounded-lg px-4 text-sm font-medium transition-all duration-200 ${active === id ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-950 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'}`}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                      const next = id === 'view' ? 'findings' : 'view';
+                      setTab(next);
+                      document.getElementById(`tab-${r.id}-${next}`)?.focus();
+                    }}
+                    className={`min-h-11 rounded-lg px-4 text-sm font-medium transition-all duration-200 ${active === id ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-950 dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'}`}
                   >
                     {id === 'view' ? t.tabView : `${t.tabFindings} (${r.result!.findings.length})`}
                   </button>
@@ -197,12 +215,12 @@ export function ResultPanel({ r }: { r: FileResult }) {
               </div>
             )}
             {active === 'view' && printer && (
-              <button type="button" onClick={printer} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-medium transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+              <button type="button" onClick={printer} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-medium transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
                 <IconPrinter className="size-4" />{t.print}
               </button>
             )}
           </div>
-          <div className="p-5 sm:p-7" role="tabpanel">
+          <div className="p-5 sm:p-7" role="tabpanel" id={`panel-${r.id}`} aria-labelledby={`tab-${r.id}-${active}`}>
             {active === 'view' && canView
               ? <InvoiceFrame xml={r.xml!} syntax={r.result!.syntax!} onPrintReady={(fn) => setPrinter(() => fn)} />
               : <Findings findings={r.result!.findings} />}

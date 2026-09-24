@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { trackCheck, trackInterest, trackMultiFile } from './analytics';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { trackCheck, trackInterest, trackPdf, trackView } from './analytics';
 import { DropZone } from './components/DropZone';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Header } from './components/Header';
 import { IconShield, IconWifiOff } from './components/icons';
 import { Faq, Footer, LegalPage } from './components/Pages';
 import { ResultPanel, type FileResult } from './components/Results';
-import { validateInvoice, warmUp } from './engine/validate';
+import { EngineError, rulesUrl, validateInvoice, warmUp, type ValidationResult } from './engine/validate';
+import { MAX_BYTES, readXmlFile } from './files';
 import { DICTS, LangContext, initialLang, useI18n, type Lang } from './i18n';
 import { useTheme } from './theme';
 
@@ -34,54 +36,94 @@ function useOnline(): boolean {
 
 const uid = () => Math.random().toString(36).slice(2);
 
-function Checker() {
+const RULE_FILES = [
+  'validation/EN16931-UBL-validation.sef.json', 'validation/EN16931-CII-validation.sef.json',
+  'validation/XRechnung-UBL-validation.sef.json', 'validation/XRechnung-CII-validation.sef.json',
+  'viz/ubl-invoice-xr.sef.json', 'viz/ubl-creditnote-xr.sef.json', 'viz/cii-xr.sef.json', 'viz/xrechnung-html.sef.json',
+];
+
+const VIEWER_RUNTIME_FILES = ['viz/FileSaver-v2.0.5.js', 'viz/xrechnung-viewer.js', 'viz/xrechnung-viewer.css', 'viz/l10n/de.xml', 'viz/l10n/en.xml'];
+
+interface Input { name: string; text: () => Promise<string>; kind: 'xml' | 'pdf' | 'too-large'; sample: boolean }
+
+function announce(t: ReturnType<typeof useI18n>['t'], res: ValidationResult): string {
+  return res.status === 'valid' ? t.statusValid
+    : res.status === 'valid-with-notes' ? t.statusValidNotes
+    : res.status === 'invalid' ? `${t.statusInvalid}: ${res.findings.filter((f) => f.level === 'error').length} ${t.errors}`
+    : res.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
+}
+
+function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
   const { t } = useI18n();
   const [results, setResults] = useState<FileResult[]>([]);
   const [interest, setInterest] = useState(false);
+  const inputs = useRef(new Map<string, Input>());
 
   useEffect(() => {
-    // Load the checker quietly after first paint so the first check feels instant.
-    const id = window.setTimeout(warmUp, 600);
-    return () => window.clearTimeout(id);
+    trackView();
+    // After first paint: load the engine, then fetch every rule file into the offline cache
+    // (the service worker stores them), so later checks and the invoice view also work offline.
+    const idle = (cb: () => void) => (typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(cb) : setTimeout(cb, 800));
+    idle(() => {
+      warmUp().then(() => Promise.all([
+        ...RULE_FILES.map((f) => fetch(rulesUrl(f)).catch(() => undefined)),
+        // The viewer stylesheets load these at runtime by relative path (no version query).
+        ...VIEWER_RUNTIME_FILES.map((f) => fetch(`/rules/${f}`).catch(() => undefined)),
+      ])).catch(() => undefined);
+    });
   }, []);
 
   const patch = (id: string, p: Partial<FileResult>) => setResults((rs) => rs.map((r) => (r.id === id ? { ...r, ...p } : r)));
 
-  const check = useCallback(async (files: { name: string; text: () => Promise<string>; pdf: boolean; sample: boolean }[]) => {
-    const entries: FileResult[] = files.map((f) => ({ id: uid(), name: f.name, sample: f.sample, state: f.pdf ? 'pdf' : 'checking' }));
-    setResults((rs) => [...entries, ...rs]);
-    if (files.length > 1) trackMultiFile(files.length);
-    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    for (const [i, f] of files.entries()) {
-      const e = entries[i];
-      if (f.pdf) continue;
-      try {
-        const xml = await f.text();
-        const result = await validateInvoice(xml, (step) => patch(e.id, { step }));
-        patch(e.id, { state: 'done', result, xml });
-        trackCheck({ status: result.status, syntax: result.syntax, sample: f.sample, ms: result.ms, rules: result.findings.filter((x) => x.level === 'error').map((x) => x.code) });
-      } catch {
-        patch(e.id, { state: 'done', result: { status: 'not-xml', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
+  const run = useCallback(async (id: string, f: Input) => {
+    patch(id, { state: 'checking', step: undefined });
+    try {
+      const xml = await f.text();
+      const result = await validateInvoice(xml, (step) => patch(id, { step }));
+      patch(id, { state: 'done', result, xml });
+      onAnnounce(announce(t, result));
+      trackCheck({ status: result.status, syntax: result.syntax, sample: f.sample, ms: result.ms, rules: result.findings.filter((x) => x.level === 'error').map((x) => x.code) });
+    } catch (e) {
+      if (e instanceof EngineError) {
+        patch(id, { state: 'engine-error' });
+        onAnnounce(t.statusEngine);
+      } else {
+        patch(id, { state: 'done', result: { status: 'not-xml', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
+        onAnnounce(t.statusNotXml);
       }
     }
-  }, []);
+  }, [onAnnounce, t]);
+
+  const check = useCallback(async (files: Input[]) => {
+    const entries: FileResult[] = files.map((f) => ({ id: uid(), name: f.name, sample: f.sample, state: f.kind === 'xml' ? 'checking' : f.kind }));
+    setResults((rs) => [...entries, ...rs]);
+    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    for (const [i, f] of files.entries()) {
+      inputs.current.set(entries[i].id, f);
+      if (f.kind === 'pdf') { trackPdf(); onAnnounce(t.statusPdf); continue; }
+      if (f.kind === 'too-large') { onAnnounce(t.tooLarge); continue; }
+      await run(entries[i].id, f);
+    }
+  }, [run, onAnnounce, t]);
 
   const onFiles = (files: File[]) => check(files.map((f) => ({
     name: f.name,
-    text: () => f.text(),
-    pdf: f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'),
+    text: () => readXmlFile(f),
+    kind: f.size > MAX_BYTES ? 'too-large' : f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'xml',
     sample: false,
   })));
 
   const sample = (kind: 'valid' | 'invalid') => check([{
     name: kind === 'valid' ? 'beispiel-gueltig.xml' : 'beispiel-fehler.xml',
-    text: () => fetch(`/samples/${kind}.xml`).then((r) => r.text()),
-    pdf: false,
+    text: () => fetch(`/samples/${kind}.xml`).then((r) => { if (!r.ok) throw new EngineError(String(r.status)); return r.text(); }),
+    kind: 'xml',
     sample: true,
   }]);
 
+  const retry = (id: string) => { const f = inputs.current.get(id); if (f) void run(id, f); };
+
   return (
-    <main id="main">
+    <main id="main" tabIndex={-1} className="outline-none">
       <section className="relative overflow-hidden">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-40 -z-10 flex justify-center">
           <div className="h-130 w-225 rounded-full bg-linear-to-br from-brand-500/25 via-sky-400/15 to-emerald-400/20 blur-3xl dark:from-brand-500/20 dark:via-sky-500/10 dark:to-emerald-500/10" />
@@ -97,15 +139,19 @@ function Checker() {
           </div>
           <div className="mt-4 flex animate-rise flex-wrap items-center justify-center gap-2 text-sm [animation-delay:240ms]">
             <span className="text-slate-500 dark:text-slate-400">{t.samplesLabel}</span>
-            <button type="button" onClick={() => sample('valid')} className="min-h-10 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-500/50">{t.sampleValid}</button>
-            <button type="button" onClick={() => sample('invalid')} className="min-h-10 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-rose-500/50">{t.sampleInvalid}</button>
+            <button type="button" onClick={() => sample('valid')} className="min-h-11 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-emerald-500/50">{t.sampleValid}</button>
+            <button type="button" onClick={() => sample('invalid')} className="min-h-11 rounded-full border border-slate-200 bg-white px-4 font-medium transition-all hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-rose-500/50">{t.sampleInvalid}</button>
           </div>
           <p className="mx-auto mt-6 max-w-xl text-sm text-slate-500 dark:text-slate-400">{t.privacyDetail}</p>
         </div>
       </section>
 
       <section id="results" aria-label={t.filesChecked} className="mx-auto max-w-4xl scroll-mt-20 space-y-6 px-4 sm:px-6">
-        {results.map((r) => <ResultPanel key={r.id} r={r} />)}
+        {results.map((r) => (
+          <ErrorBoundary key={r.id} fallback={() => <p className="rounded-3xl border border-slate-200 bg-white p-6 text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">{t.errorGeneric}</p>}>
+            <ResultPanel r={r} onRetry={() => retry(r.id)} />
+          </ErrorBoundary>
+        ))}
         {results.some((r) => r.state === 'done') && (
           <div className="animate-rise rounded-3xl border border-brand-100 bg-brand-50/60 p-5 sm:p-7 dark:border-brand-500/20 dark:bg-brand-500/10">
             <h2 className="font-semibold">{t.interestTitle}</h2>
@@ -129,6 +175,8 @@ export default function App() {
   const route = useRoute();
   const online = useOnline();
   const [rules, setRules] = useState('XRechnung 3.0.2 · EN 16931 1.3.16');
+  const [liveMsg, setLiveMsg] = useState('');
+  const onAnnounce = useCallback((msg: string) => { setLiveMsg(''); window.setTimeout(() => setLiveMsg(msg), 50); }, []);
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
@@ -136,8 +184,13 @@ export default function App() {
   }, []);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   useEffect(() => {
-    fetch('/rules/manifest.json').then((r) => r.json())
-      .then((m: { xrechnung: string; en16931: string; builtAt: string }) => setRules(`XRechnung ${m.xrechnung} · EN 16931 ${m.en16931} · ${m.builtAt}`))
+    const t = DICTS[lang];
+    const titles = { home: t.titleHome, impressum: t.impressum, datenschutz: t.privacy, lizenzen: t.licences };
+    document.title = route === 'home' ? titles.home : `${titles[route]} – ${t.brand}`;
+  }, [lang, route]);
+  useEffect(() => {
+    fetch(rulesUrl('manifest.json')).then((r) => r.json())
+      .then((m: { xrechnung: string; en16931: string; configDate: string }) => setRules(`XRechnung ${m.xrechnung} · EN 16931 ${m.en16931} · ${m.configDate}`))
       .catch(() => {});
   }, []);
 
@@ -145,14 +198,23 @@ export default function App() {
 
   return (
     <LangContext.Provider value={ctx}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg dark:focus:bg-slate-900">{ctx.t.skip}</a>
+      <a href="#main" onClick={(e) => { e.preventDefault(); const m = document.getElementById('main'); m?.focus(); m?.scrollIntoView(); }} className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg dark:focus:bg-slate-900">{ctx.t.skip}</a>
       <Header theme={theme} onToggleTheme={toggleTheme} />
       {!online && (
         <div className="animate-fade border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100" role="status">
           <IconWifiOff className="mr-2 inline size-4 align-[-2px]" />{ctx.t.offline}
         </div>
       )}
-      {route === 'home' ? <Checker /> : <LegalPage page={route} />}
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMsg}</div>
+      <ErrorBoundary fallback={() => (
+        <main id="main" className="mx-auto max-w-xl px-4 py-24 text-center">
+          <h1 className="text-2xl font-bold">{ctx.t.crashTitle}</h1>
+          <p className="mt-3 text-slate-600 dark:text-slate-300">{ctx.t.crashBody}</p>
+          <button type="button" onClick={() => location.reload()} className="mt-6 min-h-11 rounded-xl bg-brand-600 px-5 font-semibold text-white">{ctx.t.reload}</button>
+        </main>
+      )}>
+        {route === 'home' ? <Checker onAnnounce={onAnnounce} /> : <LegalPage page={route} />}
+      </ErrorBoundary>
       <Footer rules={rules} />
     </LangContext.Provider>
   );
