@@ -34,6 +34,19 @@ function useOnline(): boolean {
   return online;
 }
 
+/** True when a new app version's service worker takes over a page that an older version controlled. */
+function useUpdateNotice(): boolean {
+  const [updated, setUpdated] = useState(false);
+  useEffect(() => {
+    const sw = navigator.serviceWorker;
+    if (!sw?.controller) return; // first visit: taking control is expected, not an update
+    const on = () => setUpdated(true);
+    sw.addEventListener('controllerchange', on);
+    return () => sw.removeEventListener('controllerchange', on);
+  }, []);
+  return updated;
+}
+
 const uid = () => Math.random().toString(36).slice(2);
 
 const RULE_FILES = [
@@ -43,7 +56,7 @@ const RULE_FILES = [
 ];
 
 // Loaded before the service worker controls a first visit; fetched again so they are cached offline too.
-const CORE_FILES = [rulesUrl('scenarios.xml'), rulesUrl('xsd.json'), rulesUrl('manifest.json'), `/vendor/SaxonJS2.rt.js?v=${__RULES_VERSION__}`, '/samples/valid.xml', '/samples/invalid.xml'];
+const CORE_FILES = [rulesUrl('scenarios.xml'), rulesUrl('xsd.json'), rulesUrl('manifest.json'), `/vendor/SaxonJS2.rt.js?v=${__RULES_VERSION__}`, `/vendor/LICENSE-SaxonJS.txt?v=${__RULES_VERSION__}`, '/samples/valid.xml', '/samples/invalid.xml'];
 
 const VIEWER_RUNTIME_FILES = ['viz/FileSaver-v2.0.5.js', 'viz/xrechnung-viewer.js', 'viz/xrechnung-viewer.css', 'viz/l10n/de.xml', 'viz/l10n/en.xml'];
 
@@ -183,6 +196,7 @@ export default function App() {
   const [theme, toggleTheme] = useTheme();
   const route = useRoute();
   const online = useOnline();
+  const updated = useUpdateNotice();
   const [rules, setRules] = useState('XRechnung 3.0.2 · EN 16931 1.3.16');
   const [liveMsg, setLiveMsg] = useState('');
   const onAnnounce = useCallback((msg: string) => { setLiveMsg(''); window.setTimeout(() => setLiveMsg(msg), 50); }, []);
@@ -209,6 +223,12 @@ export default function App() {
     <LangContext.Provider value={ctx}>
       <a href="#main" onClick={(e) => { e.preventDefault(); const m = document.getElementById('main'); m?.focus(); m?.scrollIntoView(); }} className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg dark:focus:bg-slate-900">{ctx.t.skip}</a>
       <Header theme={theme} onToggleTheme={toggleTheme} />
+      {updated && (
+        <div className="animate-fade border-b border-brand-100 bg-brand-50 px-4 py-2 text-center text-sm dark:border-brand-500/30 dark:bg-brand-500/10" role="status">
+          {ctx.t.updateAvailable}{' '}
+          <button type="button" onClick={() => location.reload()} className="ml-2 inline-flex min-h-11 items-center font-semibold text-brand-700 underline underline-offset-4 dark:text-brand-100">{ctx.t.reload}</button>
+        </div>
+      )}
       {!online && (
         <div className="animate-fade border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100" role="status">
           <IconWifiOff className="mr-2 inline size-4 align-[-2px]" />{ctx.t.offline}

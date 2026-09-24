@@ -79,6 +79,7 @@ const de = {
   seconds: 's',
   line: 'Zeile',
   titleHome: 'E-Rechnung prüfen und lesbar machen – kostenlos, ohne Upload',
+  updateAvailable: 'Eine neue Version ist verfügbar.',
 };
 
 type Dict = typeof de;
@@ -160,6 +161,7 @@ const en: Dict = {
   seconds: 's',
   line: 'line',
   titleHome: 'Check and read German e-invoices – free, no upload',
+  updateAvailable: 'A new version is available.',
 };
 
 export const DICTS: Record<Lang, Dict> = { de, en };

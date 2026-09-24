@@ -244,6 +244,9 @@ test('M1/N2: a genuine first visit is enough to work offline (checking and invoi
     return req.every((p) => have.includes(p));
   }, required, { timeout: 30_000 });
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 30_000 });
+  // Only the service worker's cache may serve files offline: drop the browser's HTTP cache (QA spot-check).
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Network.clearBrowserCache');
   await context.setOffline(true);
   await page.reload();
   await page.locator('input[type=file]').setInputFiles({ name: 'offline-cii.xml', mimeType: 'application/xml', buffer: Buffer.from(fixture('valid-cii.xml')) });

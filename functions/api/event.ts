@@ -21,10 +21,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const cf = (request as Request & { cf?: { country?: string; asn?: number } }).cf;
   const ua = request.headers.get('User-Agent') ?? '';
   const bot = BOT_UA.test(ua) || !request.headers.get('Accept-Language') ? 'bot' : 'human';
+  // Only the production hostname counts for the experiment; previews and local runs are tagged apart.
+  const deployment = new URL(request.url).hostname === 'e-rechnung-pruefen.pages.dev' ? 'prod' : 'preview';
 
   env.EVENTS?.writeDataPoint({
     indexes: [ev.event],
-    blobs: [ev.event, ev.status, ev.syntax, ev.sample ? 'sample' : 'user', cf?.country ?? '', ev.rules, bot, ev.ref, String(cf?.asn ?? '')],
+    blobs: [ev.event, ev.status, ev.syntax, ev.sample ? 'sample' : 'user', cf?.country ?? '', ev.rules, bot, ev.ref, String(cf?.asn ?? ''), deployment],
     doubles: [ev.ms, ev.n],
   });
   return new Response(null, { status: 204 });
