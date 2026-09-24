@@ -1,5 +1,7 @@
 # einvoice-checker
 
+**Live: https://e-rechnung-pruefen.pages.dev**
+
 Free, in-browser checker and viewer for German e-invoices (XRechnung, UBL and CII; ZUGFeRD/Factur-X coming). **Files never leave the user's device**: the XML schema, EN 16931 and XRechnung rules run entirely in the browser, with verdicts identical to the official KoSIT validator (678/678 files, see `spike/RESULTS.md`).
 
 Company records for this product live in the company repository (`first-ai-company/projects/PRJ-2026-001-invoice-checker/`).
