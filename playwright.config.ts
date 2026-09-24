@@ -7,8 +7,9 @@ export default defineConfig({
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:8788', locale: 'de-DE' },
-  webServer: {
+  // E2E_BASE_URL runs the suite against a deployment (e.g. the Cloudflare preview) instead of a local server.
+  use: { baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:8788', locale: 'de-DE' },
+  webServer: process.env.E2E_BASE_URL ? undefined : {
     command: 'npx wrangler pages dev dist --port 8788',
     url: 'http://localhost:8788',
     reuseExistingServer: true,

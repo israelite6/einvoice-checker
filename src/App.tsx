@@ -86,13 +86,19 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
       // The viewer stylesheets load these at runtime by relative path (no version query).
       ...VIEWER_RUNTIME_FILES.map((f) => fetch(`/rules/${f}`).catch(() => undefined)),
     ]);
-    idle(() => { warmUp().then(prefetch).catch(() => undefined); });
+    // Core engine first (needed by every check). The full offline prefetch waits until the first check
+    // is done or the page has been idle for 15 s, so it never competes with the files a check needs now.
+    idle(() => { warmUp().catch(() => undefined); });
+    let prefetched = false;
+    const prefetchOnce = () => { if (!prefetched) { prefetched = true; void prefetch(); } };
+    const timer = setTimeout(prefetchOnce, 15000);
+    window.addEventListener('einvoice:checked', prefetchOnce, { once: true });
     // On a first visit the service worker only takes control after install; fetch again then, so the
     // files land in its offline cache (not just the HTTP cache). Cached responses make this cheap.
     const sw = navigator.serviceWorker;
-    const onControl = () => { void prefetch(); };
+    const onControl = () => { if (prefetched) void prefetch(); };
     sw?.addEventListener('controllerchange', onControl, { once: true });
-    return () => sw?.removeEventListener('controllerchange', onControl);
+    return () => { clearTimeout(timer); sw?.removeEventListener('controllerchange', onControl); window.removeEventListener('einvoice:checked', prefetchOnce); };
   }, []);
 
   const patch = (id: string, p: Partial<FileResult>) => setResults((rs) => rs.map((r) => (r.id === id ? { ...r, ...p } : r)));
@@ -104,6 +110,7 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
       const result = await validateInvoice(xml, (step) => patch(id, { step }));
       patch(id, { state: 'done', result, xml });
       onAnnounce(announce(t, result));
+      window.dispatchEvent(new Event('einvoice:checked'));
       trackCheck({ status: result.status, syntax: result.syntax, sample: f.sample, ms: result.ms, rules: result.findings.filter((x) => x.level === 'error').map((x) => x.code) });
     } catch (e) {
       if (e instanceof EngineError) {

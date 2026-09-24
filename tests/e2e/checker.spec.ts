@@ -38,12 +38,13 @@ test('invalid sample: shows the failed rule in plain language', async ({ page })
   expect(problems).toEqual([]);
 });
 
-test('privacy: a user file never leaves the browser', async ({ page }) => {
+test('privacy: a user file never leaves the browser', async ({ page, baseURL }) => {
   const outbound: string[] = [];
+  const origin = new URL(baseURL!).origin;
   page.on('request', (req) => {
     const body = req.postData() ?? '';
     const url = new URL(req.url());
-    if (url.hostname !== 'localhost' || body.includes(INVOICE_NUMBER) || body.includes('<cbc:')) {
+    if (url.origin !== origin || body.includes(INVOICE_NUMBER) || body.includes('<cbc:')) {
       outbound.push(`${req.method()} ${req.url()} ${body.slice(0, 80)}`);
     }
   });
@@ -169,6 +170,7 @@ test('B1: viewer tabs and attachment downloads work under the CSP', async ({ pag
 });
 
 test('B2: production analytics path sends only whitelisted fields, never file content', async ({ page }) => {
+  test.skip(Boolean(process.env.E2E_BASE_URL), 'local-only: needs the 127.0.0.1 host');
   // 127.0.0.1 is not "localhost", so analytics is active exactly as in production.
   await page.addInitScript(() => {
     const w = window as unknown as { __beacons: string[] };

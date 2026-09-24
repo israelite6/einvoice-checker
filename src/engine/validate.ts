@@ -74,6 +74,8 @@ export function warmUp(): Promise<unknown> {
   if (!config) {
     config = loadConfig();
     config.catch(() => { config = null; });
+    // Fetch the schema validator (module + wasm) in parallel; failures surface later as EngineError.
+    import('xmllint-wasm').catch(() => undefined);
   }
   return config;
 }
