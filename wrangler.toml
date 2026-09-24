@@ -1,0 +1,8 @@
+name = "e-rechnung-pruefen"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[analytics_engine_datasets]]
+binding = "EVENTS"
+dataset = "einvoice_events"

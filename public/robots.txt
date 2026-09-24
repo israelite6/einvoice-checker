@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://e-rechnung-pruefen.pages.dev/sitemap.xml
