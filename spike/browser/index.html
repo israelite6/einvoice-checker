@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Spike: in-browser XRechnung validation</title></head>
+<body>
+<pre id="out">running…</pre>
+<script src="vendor/SaxonJS2.rt.js"></script>
+<script type="module">
+import { validateXML } from './vendor/index-browser.mjs';
+
+const SVRL_LEVEL = { fatal: 'error', error: 'error', warning: 'warning', information: 'information' };
+const SAMPLES = [
+  '01.01a-INVOICE_ubl.xml', '01.01a-INVOICE_uncefact.xml',
+  '01.01a-INVOICE_ubl__wrong-payable-amount.xml', '01.01a-INVOICE_uncefact__no-buyer-reference.xml',
+  '01.01a-INVOICE_ubl__unknown-element.xml',
+];
+const out = document.getElementById('out');
+const netLog = [];
+new PerformanceObserver((l) => l.getEntries().forEach((e) => netLog.push(e.name))).observe({ type: 'resource', buffered: true });
+
+const t0 = performance.now();
+const config = await (await fetch('rules/config.json')).json();
+const tConfig = performance.now() - t0;
+const sefUrl = (loc) => 'rules/' + loc.split('/').pop().replace('.xsl', '.sef.json');
+
+async function validate(xmlText) {
+  const timings = {};
+  let t = performance.now();
+  const doc = await SaxonJS.getResource({ text: xmlText, type: 'xml' });
+  const sc = config.scenarios.find((s) => SaxonJS.XPath.evaluate(s.match, doc, { namespaceContext: s.namespaces }));
+  if (!sc) return { scenario: null };
+  timings.detect = performance.now() - t;
+  t = performance.now();
+  const xsd = await validateXML({
+    xml: [{ fileName: 'input.xml', contents: xmlText }],
+    schema: [config.xsd.find((f) => f.fileName === sc.xsd)],
+    preload: config.xsd.filter((f) => f.fileName !== sc.xsd),
+  });
+  timings.xsd = performance.now() - t;
+  const messages = [];
+  if (xsd.valid) {
+    for (const loc of sc.schematron) {
+      t = performance.now();
+      const res = await SaxonJS.transform({ stylesheetLocation: sefUrl(loc), sourceText: xmlText, destination: 'document' }, 'async');
+      timings[loc.split('/').pop()] = performance.now() - t;
+      const ns = { svrl: 'http://purl.oclc.org/dsdl/svrl' };
+      for (const fa of SaxonJS.XPath.evaluate('//svrl:failed-assert | //svrl:successful-report', res.principalResult, { namespaceContext: ns, resultForm: 'array' })) {
+        const code = fa.getAttribute('id');
+        messages.push({ code, level: sc.customLevels[code] || SVRL_LEVEL[fa.getAttribute('flag')] || 'error' });
+      }
+    }
+  }
+  return { scenario: sc.name, xsdValid: xsd.valid, accept: xsd.valid && !messages.some((m) => m.level === 'error'),
+    errors: messages.filter((m) => m.level === 'error').map((m) => m.code), timings };
+}
+
+const results = [];
+for (const name of SAMPLES) {
+  const xml = await (await fetch('samples/' + name)).text();
+  const t = performance.now();
+  const r = await validate(xml);
+  results.push({ name, ms: Math.round(performance.now() - t), ...r,
+    timings: Object.fromEntries(Object.entries(r.timings || {}).map(([k, v]) => [k, Math.round(v)])) });
+}
+window.__results = { configMs: Math.round(tConfig), results, requests: netLog };
+out.textContent = JSON.stringify(window.__results, null, 1);
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+node_modules/
+spike/vendor/
+spike/ref/
+spike/out/
+spike/build/
+spike/mutants/
+*.log
+ref-mut/
+spike/browser/vendor/
+spike/browser/rules/
+spike/browser/samples/

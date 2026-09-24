@@ -1,0 +1,3555 @@
+[
+ {
+  "file": "01.01_comprehensive_test_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01_comprehensive_test_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01_comprehensive_test_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01_comprehensive_test_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.01a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02_comprehensive_test_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02_comprehensive_test_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02_comprehensive_test_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02_comprehensive_test_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.02a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03_comprehensive_test_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03_comprehensive_test_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03_comprehensive_test_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03_comprehensive_test_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.03a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04_comprehensive_test_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04_comprehensive_test_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04_comprehensive_test_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04_comprehensive_test_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.04a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05_minimal_test_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05_minimal_test_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05_minimal_test_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05_minimal_test_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.05a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06_minimal_test_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06_minimal_test_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06_minimal_test_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06_minimal_test_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.06a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.07a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.07a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.07a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.07a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.07a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.08a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.08a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.08a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.08a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.08a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.09a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.09a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.09a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.09a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.09a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.10a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.10a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.10a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.10a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.10a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.11a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.11a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.11a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.11a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.11a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.12a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.12a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.12a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.12a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.12a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.13a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.13a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.13a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.13a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.13a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.14a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.14a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.14a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.14a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.14a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.15a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.15a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.15a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.15a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.15a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.17a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.17a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.17a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.17a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.17a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.18a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.18a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.18a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.18a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.18a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.19a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.19a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.19a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.19a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.19a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.20a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.20a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.20a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.20a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.20a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.21a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.21a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.21a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.21a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "01.21a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-cvd_INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-cvd_INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-cvd_INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.01a-cvd_INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.02a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.02a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.02a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.02a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.02a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.03a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.03a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.03a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.03a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.03a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.04a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.04a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.04a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.04a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.04a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.05a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.05a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.05a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.05a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.05a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.06a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.06a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.06a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.06a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "02.06a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.01a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.01a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.01a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.01a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.01a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.02a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.02a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.02a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.02a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.02a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.03a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.03a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.03a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.03a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.03a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.04a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.04a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.04a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.04a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.04a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.05a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.05a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.05a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.05a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.05a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.06a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.06a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.06a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.06a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.06a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.07a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.07a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.07a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "03.07a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.01a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.01a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.01a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.02a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.02a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.02a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.03a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.03a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.03a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.04a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.04a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.04a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.05a-INVOICE_uncefact__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "04.05a-INVOICE_uncefact__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "05.01a-INVOICE_ubl__bad-issue-date.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.2,cvc-datatype-valid.1.2.1",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "05.01a-INVOICE_ubl__no-invoice-number.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ },
+ {
+  "file": "05.01a-INVOICE_ubl__unknown-element.xml",
+  "ref": {
+   "accept": false,
+   "xsd": false,
+   "e": "cvc-complex-type.2.4.a",
+   "w": "",
+   "i": ""
+  },
+  "ours": {
+   "accept": false,
+   "xsd": false,
+   "e": "",
+   "w": "",
+   "i": ""
+  }
+ }
+]
