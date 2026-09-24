@@ -234,17 +234,20 @@ test('M13: skip link on a legal page keeps the route', async ({ page }) => {
   expect(new URL(page.url()).hash).toBe('#impressum');
 });
 
-test('M1/N2: a genuine first visit is enough to work offline (checking and invoice view)', async ({ page, context }) => {
+test('M1/N2: after a genuine first visit with one check, checking and the invoice view work offline', async ({ page, context }) => {
   await page.goto('/');
-  // No reload and no check online: the service worker must take control and cache everything itself.
+  // First visit, one real check online (the promise in the UI copy), no reload.
+  await page.getByRole('button', { name: 'Rechnung mit Fehler' }).click();
+  await expect(page.getByRole('heading', { name: 'Nicht gültig' })).toBeVisible({ timeout: 30_000 });
   const required = ['/rules/scenarios.xml', '/rules/xsd.json', '/vendor/SaxonJS2.rt.js', '/rules/validation/EN16931-CII-validation.sef.json',
     '/rules/validation/XRechnung-CII-validation.sef.json', '/rules/viz/cii-xr.sef.json', '/rules/viz/xrechnung-html.sef.json', '/rules/viz/l10n/de.xml'];
-  await page.waitForFunction(async (req) => {
+  // Poll the service worker's rule cache (expect.poll really awaits the async check).
+  await expect.poll(async () => page.evaluate(async (req) => {
     const name = (await caches.keys()).find((k) => k.startsWith('rules-'));
     if (!name) return false;
     const have = (await (await caches.open(name)).keys()).map((r) => new URL(r.url).pathname);
     return req.every((p) => have.includes(p));
-  }, required, { timeout: 30_000 });
+  }, required), { timeout: 45_000 }).toBe(true);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 30_000 });
   // Only the service worker's cache may serve files offline: drop the browser's HTTP cache (QA spot-check).
   const cdp = await context.newCDPSession(page);

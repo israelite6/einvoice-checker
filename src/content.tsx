@@ -6,14 +6,14 @@ export const OWNER = { name: 'Israel Ebenezer', email: 'israel.hmis@gmail.com' }
 
 export const FAQ: Record<Lang, { q: string; a: ReactNode }[]> = {
   de: [
-    { q: 'Wird meine Rechnung hochgeladen?', a: 'Nein. Die Datei wird ausschließlich in Ihrem Browser gelesen, geprüft und dargestellt. Es gibt keinen Server, der Rechnungen empfängt. Nach dem ersten Laden funktioniert die Prüfung auch ohne Internetverbindung.' },
+    { q: 'Wird meine Rechnung hochgeladen?', a: 'Nein. Die Datei wird ausschließlich in Ihrem Browser gelesen, geprüft und dargestellt. Es gibt keinen Server, der Rechnungen empfängt. Nach der ersten Prüfung funktioniert das Tool auch ohne Internetverbindung.' },
     { q: 'Welche Regeln werden geprüft?', a: 'Das XML-Schema, die Geschäftsregeln der europäischen Norm EN 16931 und die nationalen XRechnung-Regeln – mit den offiziell veröffentlichten Prüfregeln (KoSIT-Prüfkonfiguration). Unsere Ergebnisse stimmen in Tests mit dem offiziellen Prüfprogramm überein.' },
     { q: 'Was ist der Unterschied zwischen XRechnung und ZUGFeRD?', a: 'XRechnung ist eine reine XML-Datei (Syntax UBL oder CII). ZUGFeRD ist ein PDF mit eingebetteter XML-Datei. Bei hybriden Rechnungen ist laut Bundesfinanzministerium der XML-Teil maßgeblich. Die Prüfung von ZUGFeRD-PDFs folgt in Kürze.' },
     { q: 'Ist „gültig“ eine rechtliche Bestätigung?', a: 'Nein. Wir prüfen technisch gegen die veröffentlichten Regeln. Ob eine Rechnung steuerlich korrekt ist, hängt vom Einzelfall ab – dafür ist eine Steuerberatung zuständig.' },
     { q: 'Was kostet das?', a: 'Nichts. Keine Anmeldung, kein Konto, keine Begrenzung für einzelne Prüfungen.' },
   ],
   en: [
-    { q: 'Is my invoice uploaded?', a: 'No. The file is read, checked and displayed only in your browser. There is no server that receives invoices. After the first load the check even works without an internet connection.' },
+    { q: 'Is my invoice uploaded?', a: 'No. The file is read, checked and displayed only in your browser. There is no server that receives invoices. After your first check the tool also works without an internet connection.' },
     { q: 'Which rules are checked?', a: 'The XML schema, the business rules of the European standard EN 16931 and the German XRechnung rules – using the officially published validation rules (KoSIT configuration). In tests our results match the official validator.' },
     { q: 'What is the difference between XRechnung and ZUGFeRD?', a: 'XRechnung is a pure XML file (UBL or CII syntax). ZUGFeRD is a PDF with an embedded XML file. For hybrid invoices the German Federal Ministry of Finance says the XML part is authoritative. ZUGFeRD PDF checking is coming soon.' },
     { q: 'Does "valid" mean legally compliant?', a: 'No. We check technically against the published rules. Whether an invoice is correct for tax purposes depends on the case – please ask a tax adviser.' },
