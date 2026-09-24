@@ -33,10 +33,16 @@ const RELEASES = {
 async function fetchZip(name) {
   fs.mkdirSync(CACHE, { recursive: true });
   const file = path.join(CACHE, name + '.zip');
-  if (!fs.existsSync(file)) {
-    const res = await fetch(RELEASES[name].url);
-    if (!res.ok) throw new Error(`${name}: HTTP ${res.status}`);
-    fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+  // Retries with backoff: release hosts occasionally drop connections from CI runners.
+  for (let attempt = 1; !fs.existsSync(file); attempt++) {
+    try {
+      const res = await fetch(RELEASES[name].url, { headers: { 'User-Agent': 'einvoice-checker-build (+https://github.com/israelite6/einvoice-checker)' } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+    } catch (e) {
+      if (attempt >= 4) throw new Error(`${name}: download failed after ${attempt} attempts: ${e}`);
+      await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
   }
   // Supply-chain check: every download must match its pinned checksum (qa-release-r1 M10).
   const digest = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
