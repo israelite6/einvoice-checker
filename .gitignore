@@ -34,3 +34,8 @@ playwright-report/
 public/sw-cleanup.js
 spike/zugferd/corpus/
 spike/zugferd/manifest.json
+spike/zugferd/corpus-*/
+spike/zugferd/xml-*/
+spike/zugferd/ref-*/
+spike/zugferd/manifest-*.json
+spike/zugferd/mustang-*/

@@ -116,3 +116,22 @@ describe('picture vs XML: edge cases found by the ZUGFeRD corpus', () => {
     expect(isCalendarDate('20240229')).toBe(true);
   });
 });
+
+describe('picture vs XML: QA r2 findings (RM1)', () => {
+  const base = (extra: string) => `<rsm:ExchangedDocument><ram:ID>R-1</ram:ID><ram:IssueDateTime><udt:DateTimeString format="102">20160404</udt:DateTimeString></ram:IssueDateTime></rsm:ExchangedDocument>${extra}<ram:GrandTotalAmount>100.00</ram:GrandTotalAmount>`;
+  it('recognises written-out dates in German and English', () => {
+    expect(compareWithPicture(base(''), 'Rechnung R-1 vom 4. April 2016, Summe 100,00 EUR, vielen Dank')).toEqual([]);
+    expect(compareWithPicture(base(''), 'Invoice R-1 dated April 4, 2016 total 100.00 EUR thank you')).toEqual([]);
+  });
+  it('compares only the payee IBAN and skips direct debit', () => {
+    const payee = '<ram:SpecifiedTradeSettlementPaymentMeans><ram:TypeCode>58</ram:TypeCode><ram:PayeePartyCreditorFinancialAccount><ram:IBANID>DE11111111111111111111</ram:IBANID></ram:PayeePartyCreditorFinancialAccount></ram:SpecifiedTradeSettlementPaymentMeans>';
+    const debit = '<ram:SpecifiedTradeSettlementPaymentMeans><ram:TypeCode>59</ram:TypeCode><ram:PayerPartyDebtorFinancialAccount><ram:IBANID>DE22222222222222222222</ram:IBANID></ram:PayerPartyDebtorFinancialAccount></ram:SpecifiedTradeSettlementPaymentMeans>';
+    expect(keyFieldsFromCii(base(payee)).find((f) => f.code === 'PDF-XML-IBAN')?.value).toBe('DE11111111111111111111');
+    expect(keyFieldsFromCii(base(debit)).find((f) => f.code === 'PDF-XML-IBAN')).toBeUndefined();
+  });
+  it('gives one neutral note when nothing can be matched', () => {
+    const r = compareWithPicture(base(''), 'Ganz anderes Layout ohne erkennbare Werte, nur Fließtext und Logos hier');
+    expect(r.map((f) => f.code)).toEqual(['PDF-XML-NOMATCH']);
+    expect(r[0].level).toBe('information');
+  });
+});

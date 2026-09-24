@@ -18,7 +18,13 @@ export function DropZone({ onFiles, compact = false }: { onFiles: (files: File[]
 
   return (
     <div
-      onDragEnter={(e) => { e.preventDefault(); depth.current++; setOver(true); }}
+      onDragEnter={(e) => {
+        e.preventDefault();
+        depth.current++;
+        setOver(true);
+        // A PDF is on its way: start loading the PDF engine now, before the drop.
+        if ([...e.dataTransfer.items].some((i) => i.type === 'application/pdf')) void import('../engine/pdf').then((m) => m.prefetchPdfEngine());
+      }}
       onDragOver={(e) => e.preventDefault()}
       onDragLeave={() => { depth.current = Math.max(0, depth.current - 1); if (!depth.current) setOver(false); }}
       onDrop={onDrop}

@@ -70,6 +70,7 @@ function announce(t: ReturnType<typeof useI18n>['t'], res: ValidationResult): st
     : res.status === 'pdf-no-xml' ? t.statusPdfNoXml
     : res.status === 'profile-incomplete' ? t.statusProfileIncomplete
     : res.status === 'profile-unsupported' ? t.statusProfileUnsupported
+    : res.status === 'embedded-unknown' ? t.statusEmbeddedUnknown
     : res.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
 }
 
@@ -85,6 +86,9 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
     // (the service worker stores them), so later checks and the invoice view also work offline.
     const idle = (cb: () => void) => (typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(cb) : setTimeout(cb, 800));
     const prefetch = () => Promise.all([
+      // PDF engine (pdf.js, worker, ZUGFeRD module): cached for offline use and a faster first PDF check.
+      import('./engine/pdf').then((m) => m.prefetchPdfEngine()).catch(() => undefined),
+      import('./engine/zugferd').catch(() => undefined),
       ...CORE_FILES.map((u) => fetch(u).catch(() => undefined)),
       ...RULE_FILES.map((f) => fetch(rulesUrl(f)).catch(() => undefined)),
       // The viewer stylesheets load these at runtime by relative path (no version query).
@@ -113,8 +117,13 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
       let result: ValidationResult & { pdf?: { profile: string; attachment: string | null } };
       let xml: string | undefined;
       if (f.kind === 'pdf' && f.bytes) {
-        // ZUGFeRD / Factur-X: loaded on demand only when a PDF is dropped.
-        const { validatePdf } = await import('./engine/zugferd');
+        // ZUGFeRD / Factur-X: loaded on demand; a failed load is an engine problem, not a verdict on the file.
+        let validatePdf: typeof import('./engine/zugferd').validatePdf;
+        try {
+          ({ validatePdf } = await import('./engine/zugferd'));
+        } catch (err) {
+          throw new EngineError(String(err), true);
+        }
         const r = await validatePdf(await f.bytes(), (step) => patch(id, { step }));
         result = r;
         xml = r.xml ?? undefined;
@@ -131,7 +140,7 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
         patch(id, { state: 'done', result: { status: 'pdf-unreadable', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
         onAnnounce(t.statusPdfUnreadable);
       } else if (e instanceof EngineError) {
-        patch(id, { state: 'engine-error' });
+        patch(id, { state: 'engine-error', reloadNeeded: e.reload });
         onAnnounce(t.statusEngine);
       } else {
         patch(id, { state: 'done', result: { status: 'not-xml', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });

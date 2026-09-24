@@ -80,6 +80,9 @@ test('ZUGFeRD: picture that differs from the XML is flagged (real Mustang sample
   await expect(page.getByRole('heading', { name: 'Gültig mit Warnungen' })).toBeVisible({ timeout: 45_000 });
   await page.getByRole('tab', { name: /Prüfergebnis/ }).click();
   await expect(page.getByText('Der Gesamtbetrag aus der XML steht nicht im PDF-Bild. Maßgeblich ist die XML.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bild-vs.-XML-Vergleich' })).toBeVisible();
+  await expect(page.getByText('963.11')).toBeVisible();
+  await expect(page.getByText('Offizieller Regeltext')).toHaveCount(0);
 });
 
 test('ZUGFeRD: EXTENDED profile is viewable but explicitly not checked', async ({ page }) => {
@@ -110,6 +113,45 @@ test('plain PDF without XML and a corrupt PDF are reported clearly', async ({ pa
   await expect(page.getByRole('heading', { name: 'Keine eingebettete E-Rechnung gefunden' })).toBeVisible({ timeout: 45_000 });
   await page.locator('input[type=file]').setInputFiles({ name: 'kaputt.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.7 this is not a pdf') });
   await expect(page.getByRole('heading', { name: 'PDF konnte nicht gelesen werden' })).toBeVisible({ timeout: 45_000 });
+  await page.locator('input[type=file]').setInputFiles(pdf('password.pdf'));
+  await expect(page.getByRole('heading', { name: 'PDF konnte nicht gelesen werden' }).first()).toBeVisible({ timeout: 45_000 });
+});
+
+test.describe('PDF engine unavailable (no service worker)', () => {
+  test.use({ serviceWorkers: 'block' });
+  test('RB1: a PDF engine load failure is not reported as a problem with the file; retry works', async ({ page }) => {
+    await page.goto('/');
+    await page.route(/\/assets\/pdf/, (r) => r.abort());
+    await page.locator('input[type=file]').setInputFiles(pdf('zugferd-valid.pdf'));
+    await expect(page.getByRole('heading', { name: 'Prüfmodul konnte nicht geladen werden' })).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByText('Keine lesbare XML-Datei')).toHaveCount(0);
+    await page.unroute(/\/assets\/pdf/);
+    // A failed code module stays failed until reload (browser module cache), so the button reloads.
+    await page.getByRole('button', { name: 'Seite neu laden' }).click();
+    await page.waitForLoadState('load');
+    await page.locator('input[type=file]').setInputFiles(pdf('zugferd-valid.pdf'));
+    await expect(page.getByRole('heading', { name: /^Gültig/ })).toBeVisible({ timeout: 45_000 });
+  });
+});
+
+test('RB1: after one XML check, ZUGFeRD PDFs also work offline (HTTP cache cleared)', async ({ page, context }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Rechnung mit Fehler' }).click();
+  await expect(page.getByRole('heading', { name: 'Nicht gültig' })).toBeVisible({ timeout: 30_000 });
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 30_000 });
+  await expect.poll(async () => page.evaluate(async () => {
+    const keys = await caches.keys();
+    const pdfCache = keys.find((k) => k === 'pdfjs');
+    if (!pdfCache) return false;
+    return (await (await caches.open(pdfCache)).keys()).length >= 2;
+  }), { timeout: 45_000 }).toBe(true);
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Network.clearBrowserCache');
+  await context.setOffline(true);
+  await page.reload();
+  await page.getByRole('button', { name: 'ZUGFeRD-PDF' }).click();
+  await expect(page.getByRole('heading', { name: /^Gültig/ })).toBeVisible({ timeout: 45_000 });
+  await context.setOffline(false);
 });
 
 test('theme toggle switches and persists', async ({ page }) => {
@@ -242,10 +284,17 @@ test('B2: production analytics path sends only whitelisted fields, never file co
     ['geheim-fehler-4711.xml', fs.readFileSync(path.resolve('public/samples/invalid.xml'), 'utf8')],
     ['geheim-schema-4711.xml', fixture('xsd-invalid-ubl.xml')],
   ];
+  const pdfFiles: string[] = ['zugferd-valid.pdf', 'zugferd-picture-mismatch.pdf'];
   for (const [name, xml] of files) {
     await page.locator('input[type=file]').setInputFiles({ name, mimeType: 'application/xml', buffer: Buffer.from(xml) });
     await expect(page.getByText(name)).toBeVisible();
     await page.waitForTimeout(3000);
+  }
+  for (const f of pdfFiles) {
+    const name = `geheim-${f.replace('.pdf', '')}-4711.pdf`;
+    await page.locator('input[type=file]').setInputFiles({ name, mimeType: 'application/pdf', buffer: fs.readFileSync(path.resolve('tests/fixtures', f)) });
+    await expect(page.getByText(name)).toBeVisible();
+    await page.waitForTimeout(4000);
   }
   await page.waitForTimeout(1000);
   const beacons: string[] = await page.evaluate(() => (window as unknown as { __beacons: string[] }).__beacons);
@@ -255,7 +304,7 @@ test('B2: production analytics path sends only whitelisted fields, never file co
     const [url, body] = [b.slice(0, b.indexOf(' ')), b.slice(b.indexOf(' ') + 1)];
     expect(url).toMatch(/\/api\/event$/);
     for (const k of Object.keys(JSON.parse(body))) expect(allowed.has(k), `unexpected key ${k}`).toBe(true);
-    for (const canary of ['geheim', '4711', INVOICE_NUMBER, 'DE79000000001234567890', 'Seller name', 'Buyer name', '<']) {
+    for (const canary of ['geheim', '4711', INVOICE_NUMBER, 'DE79000000001234567890', 'Seller name', 'Buyer name', '<', 'RE1001', '963', 'weclapp']) {
       expect(body.includes(canary), `beacon leaked ${canary}: ${body}`).toBe(false);
     }
   }

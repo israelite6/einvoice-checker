@@ -1,6 +1,7 @@
 // "Picture vs XML": for hybrid invoices (ZUGFeRD / Factur-X) the XML is legally authoritative
-// (BMF FAQ, question 12a). This objective check looks for key XML values in the PDF's visible text
-// and reports values that do not appear, so the recipient can see where the picture may differ.
+// (BMF FAQ, question 12a). This check looks for key XML values anywhere in the PDF's visible text
+// and reports values that do not appear. It is a helpful comparison, not an official rule: a value
+// "not found" can also mean the picture prints it in a format we do not recognise.
 import type { Finding } from './validate';
 
 export interface KeyField { code: string; value: string; variants: string[] }
@@ -17,12 +18,20 @@ export function amountVariants(v: string): string[] {
   return [...new Set([`${int},${dec}`, `${grouped('.')},${dec}`, `${int}.${dec}`, `${grouped(',')}.${dec}`])];
 }
 
-/** yyyymmdd (CII format 102) printed as dd.mm.yyyy, d.m.yyyy, yyyy-mm-dd or dd/mm/yyyy. */
+const MONTHS_DE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** yyyymmdd (CII format 102) in numeric and written-out German/English forms. */
 export function dateVariants(v: string): string[] {
   const m = /^(\d{4})(\d{2})(\d{2})$/.exec(v);
   if (!m) return [v];
   const [, y, mo, d] = m;
-  return [`${d}.${mo}.${y}`, `${Number(d)}.${Number(mo)}.${y}`, `${y}-${mo}-${d}`, `${d}/${mo}/${y}`, `${d}.${mo}.${y.slice(2)}`];
+  const dn = Number(d), mn = Number(mo);
+  const de = MONTHS_DE[mn - 1], en = MONTHS_EN[mn - 1];
+  return [
+    `${d}.${mo}.${y}`, `${dn}.${mn}.${y}`, `${y}-${mo}-${d}`, `${d}/${mo}/${y}`, `${d}.${mo}.${y.slice(2)}`,
+    `${dn}. ${de} ${y}`, `${d}. ${de} ${y}`, `${dn} ${en} ${y}`, `${en} ${dn}, ${y}`, `${en} ${d}, ${y}`,
+  ];
 }
 
 export function isCalendarDate(v: string): boolean {
@@ -44,20 +53,23 @@ export function keyFieldsFromCii(xml: string): KeyField[] {
   if (total) fields.push({ code: 'PDF-XML-TOTAL', value: total, variants: amountVariants(total) });
   const due = first(xml, /<(?:\w+:)?DuePayableAmount[^>]*>([^<]+)</);
   if (due && due !== total) fields.push({ code: 'PDF-XML-DUE', value: due, variants: amountVariants(due) });
-  const iban = first(xml, /<(?:\w+:)?IBANID>([^<]+)</);
+  // Only the payee's account (credit transfer); a direct debit carries the buyer's account instead.
+  const directDebit = /<(?:\w+:)?SpecifiedTradeSettlementPaymentMeans>\s*<(?:\w+:)?TypeCode>59</.test(xml);
+  const iban = directDebit ? null : first(xml, /<(?:\w+:)?PayeePartyCreditorFinancialAccount>\s*<(?:\w+:)?IBANID>([^<]+)</);
   if (iban) fields.push({ code: 'PDF-XML-IBAN', value: iban, variants: [iban] });
   return fields;
 }
 
 const squash = (s: string) => s.toLowerCase().replace(/\s+/g, '');
 
-/** Returns warnings for XML values not found in the visible PDF text. */
+/** Returns findings for XML values not found in the visible PDF text. */
 export function compareWithPicture(xml: string, pdfText: string): Finding[] {
   const text = squash(pdfText);
-  if (text.length < 20) {
-    return [{ code: 'PDF-XML-NOTEXT', level: 'information', rawLevel: 'information', text: 'The PDF has no readable text (for example a scanned image), so the picture could not be compared with the XML.' }];
-  }
-  return keyFieldsFromCii(xml)
-    .filter((f) => !f.variants.some((v) => text.includes(squash(v))))
-    .map((f) => ({ code: f.code, level: 'warning' as const, rawLevel: 'warning' as const, text: `XML value "${f.value}" was not found in the visible PDF.` }));
+  const note = (code: string): Finding => ({ code, level: 'information', rawLevel: 'information', text: '', picture: true });
+  if (text.length < 20) return [note('PDF-XML-NOTEXT')];
+  const fields = keyFieldsFromCii(xml);
+  const missing = fields.filter((f) => !f.variants.some((v) => text.includes(squash(v))));
+  // Nothing matched at all: the picture is probably laid out or formatted in a way we cannot compare.
+  if (fields.length > 1 && missing.length === fields.length) return [note('PDF-XML-NOMATCH')];
+  return missing.map((f) => ({ code: f.code, level: 'warning' as const, rawLevel: 'warning' as const, text: '', value: f.value, picture: true }));
 }

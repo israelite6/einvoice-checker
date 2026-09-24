@@ -90,6 +90,11 @@ const de = {
   statusProfileUnsupported: 'Profil wird noch nicht geprüft',
   verdictProfileUnsupported: 'Die Rechnung nutzt ein ZUGFeRD-Profil (z. B. BASIC oder EXTENDED), für das wir die offiziellen Regeln noch nicht anwenden. Sie können die Rechnung ansehen; ein Prüfergebnis gibt es dafür nicht.',
   profile: 'Profil',
+  pictureHeading: 'Bild-vs.-XML-Vergleich',
+  pictureIntro: 'Hilfsvergleich, keine offizielle Regel: Wir suchen wichtige Werte aus der XML im sichtbaren PDF. Maßgeblich ist immer die XML.',
+  xmlValue: 'Wert in der XML',
+  statusEmbeddedUnknown: 'Eingebettete XML nicht erkannt',
+  verdictEmbeddedUnknown: 'Das PDF enthält eine XML-Datei, die keinem unterstützten E-Rechnungsformat entspricht.',
 };
 
 type Dict = typeof de;
@@ -182,6 +187,11 @@ const en: Dict = {
   statusProfileUnsupported: 'Profile not checked yet',
   verdictProfileUnsupported: 'The invoice uses a ZUGFeRD profile (e.g. BASIC or EXTENDED) for which we do not apply the official rules yet. You can view the invoice; there is no check result for it.',
   profile: 'Profile',
+  pictureHeading: 'Picture vs XML',
+  pictureIntro: 'A helpful comparison, not an official rule: we look for key XML values in the visible PDF. The XML is always authoritative.',
+  xmlValue: 'Value in the XML',
+  statusEmbeddedUnknown: 'Embedded XML not recognised',
+  verdictEmbeddedUnknown: 'The PDF contains an XML file that does not match a supported e-invoice format.',
 };
 
 export const DICTS: Record<Lang, Dict> = { de, en };

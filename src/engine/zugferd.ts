@@ -2,11 +2,11 @@
 // same official validation as for XML files. Profiles without official rules in our rule set are
 // shown (readable view) but explicitly marked as not checked; we never guess a verdict.
 import { compareWithPicture } from './consistency';
-import { readPdf, type Profile } from './pdf';
+import { readPdf, type PdfContent, type Profile } from './pdf';
 import { validateInvoice, type Step, type ValidationResult } from './validate';
 
 /** Profiles whose XML the official EN 16931 / XRechnung rules cover. */
-const CHECKABLE: Profile[] = ['en16931', 'xrechnung'];
+const CHECKABLE: Profile[] = ['en16931', 'xrechnung', 'ubl'];
 /** Profiles that by design do not contain a full EN 16931 invoice. */
 const INCOMPLETE: Profile[] = ['minimum', 'basic-wl'];
 
@@ -29,23 +29,32 @@ export async function validatePdf(bytes: Uint8Array, onStep?: (step: Step) => vo
   if (INCOMPLETE.includes(content.profile)) {
     return done({ ...base, status: 'profile-incomplete', syntax: 'cii', pdf, xml: content.xml });
   }
+  if (content.profile === 'unknown') {
+    // Not a recognised ZUGFeRD/Factur-X profile: try the official scenarios (e.g. plain EN 16931 CII);
+    // if none applies, say so instead of guessing.
+    const res = await validateInvoice(content.xml, onStep);
+    if (!res.scenario) return done({ ...base, status: 'embedded-unknown', pdf, xml: content.xml });
+    return done(withPicture(res, content, pdf));
+  }
   if (!CHECKABLE.includes(content.profile)) {
     // ZUGFeRD 1 uses an older schema the official viewer cannot render: no readable view for it.
-    const viewable = content.profile !== 'zugferd1' && content.profile !== 'unknown';
+    const viewable = content.profile !== 'zugferd1';
     return done({ ...base, status: 'profile-unsupported', syntax: viewable ? 'cii' : null, pdf, xml: content.xml });
   }
 
   const res = await validateInvoice(content.xml, onStep);
   if (!res.scenario) return done({ ...res, pdf, xml: content.xml });
-  const picture = compareWithPicture(content.xml, content.text);
-  const findings = [...res.findings, ...picture];
+  return done(withPicture(res, content, pdf));
+}
+
+/** Adds the picture-vs-XML comparison (CII only) and notes about further invoice attachments. */
+function withPicture(res: ValidationResult, content: PdfContent, pdf: PdfResult['pdf']): Omit<PdfResult, 'ms'> {
+  const extra = res.syntax === 'cii' ? compareWithPicture(content.xml!, content.text) : [];
+  if (content.otherInvoiceAttachments.length) {
+    extra.push({ code: 'PDF-MULTI-XML', level: 'information', rawLevel: 'information', text: '', value: content.otherInvoiceAttachments.join(', '), picture: true });
+  }
+  const findings = [...res.findings, ...extra];
   const hasError = findings.some((f) => f.level === 'error');
   const hasWarning = findings.some((f) => f.level === 'warning');
-  return done({
-    ...res,
-    status: hasError ? 'invalid' : hasWarning ? 'valid-with-notes' : 'valid',
-    findings,
-    pdf,
-    xml: content.xml,
-  });
+  return { ...res, status: hasError ? 'invalid' : hasWarning ? 'valid-with-notes' : 'valid', findings, pdf, xml: content.xml };
 }

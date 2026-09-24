@@ -7,10 +7,11 @@ import { chromium } from '@playwright/test';
 
 const BASE = process.env.BASE ?? 'http://localhost:8788';
 const SPIKE = path.resolve('spike');
-const manifest = JSON.parse(fs.readFileSync(path.join(SPIKE, 'zugferd/manifest.json'), 'utf8'));
-const refOf = (xmlRel) => {
-  const dir = xmlRel.startsWith('mutants/') ? 'ref-mut' : 'ref';
-  const s = fs.readFileSync(path.join(SPIKE, dir, path.basename(xmlRel, '.xml') + '-report.xml'), 'utf8');
+// MANIFEST selects the corpus (default: XRECHNUNG profile, KoSIT renderer).
+const MANIFEST = process.env.MANIFEST ?? 'manifest-xrechnung-kosit.json';
+const manifest = JSON.parse(fs.readFileSync(path.join(SPIKE, 'zugferd', MANIFEST), 'utf8'));
+const refOf = (refRel) => {
+  const s = fs.readFileSync(path.join(SPIKE, refRel), 'utf8');
   const msgs = [...s.matchAll(/<rep:message [^>]*>/g)].map((m) => ({
     level: (m[0].match(/level="([a-z]+)"/) || [])[1], code: (m[0].match(/code="([^"]+)"/) || [])[1] || 'XSD',
   }));
@@ -23,8 +24,8 @@ const page = await browser.newPage();
 await page.goto(`${BASE}/?parity&test`);
 await page.waitForFunction(() => '__einvoice' in window, null, { timeout: 60_000 });
 let total = 0, same = 0, pictureWarnings = 0; const diffs = [];
-for (const { pdf, xml } of manifest) {
-  const r = refOf(xml);
+for (const { pdf, xml, ref } of manifest) {
+  const r = refOf(ref);
   const bytes = [...fs.readFileSync(path.join(SPIKE, pdf))];
   const o = await page.evaluate(async (b) => window.__einvoice.validatePdf(new Uint8Array(b)), bytes);
   const pic = o.findings.filter((f) => f.code.startsWith('PDF-XML'));
@@ -38,5 +39,5 @@ for (const { pdf, xml } of manifest) {
   if (pic.length) diffs.push({ pdf: path.basename(pdf), pictureFalseAlarm: pic.map((f) => f.code) });
 }
 await browser.close();
-console.log(JSON.stringify({ engine: 'shipped validatePdf (browser)', total, identical: same, mismatches: total - same, pictureFalseAlarms: pictureWarnings }));
+console.log(JSON.stringify({ engine: 'shipped validatePdf (browser)', corpus: MANIFEST, total, identical: same, mismatches: total - same, pictureFalseAlarms: pictureWarnings }));
 if (diffs.length) { console.error(JSON.stringify(process.env.ALL ? diffs : diffs.slice(0, 12), null, 1)); process.exit(1); }

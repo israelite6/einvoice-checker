@@ -13,6 +13,8 @@ export interface FileResult {
   state: 'checking' | 'done' | 'pdf' | 'engine-error' | 'too-large';
   step?: Step;
   result?: ValidationResult & { pdf?: { profile: string; attachment: string | null } };
+  /** A code module failed to load; only a page reload recovers (browser module cache). */
+  reloadNeeded?: boolean;
   xml?: string;
 }
 
@@ -93,6 +95,7 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'pdf-unreadable' ? t.statusPdfUnreadable
     : res?.status === 'profile-incomplete' ? t.statusProfileIncomplete
     : res?.status === 'profile-unsupported' ? t.statusProfileUnsupported
+    : res?.status === 'embedded-unknown' ? t.statusEmbeddedUnknown
     : res?.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
   const body = r.state === 'engine-error' ? t.verdictEngine
     : r.state === 'too-large' ? t.verdictTooLarge
@@ -104,6 +107,7 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'pdf-unreadable' ? t.verdictPdfUnreadable
     : res?.status === 'profile-incomplete' ? t.verdictProfileIncomplete
     : res?.status === 'profile-unsupported' ? t.verdictProfileUnsupported
+    : res?.status === 'embedded-unknown' ? t.verdictEmbeddedUnknown
     : res?.status === 'not-xml' ? t.verdictNotXml : t.verdictUnsupported;
   const c = counts(res?.findings ?? []);
   return (
@@ -115,7 +119,7 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
         <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
         <p className="mt-1 text-slate-600 dark:text-slate-300">{body}</p>
         {r.state === 'engine-error' && onRetry && (
-          <button type="button" onClick={onRetry} className="mt-3 min-h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">{t.retry}</button>
+          <button type="button" onClick={r.reloadNeeded ? () => location.reload() : onRetry} className="mt-3 min-h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">{r.reloadNeeded ? t.reload : t.retry}</button>
         )}
         {res?.pdf && res.pdf.profile !== 'unknown' && (
           <p className="mt-3 text-xs"><span className="rounded-full bg-violet-100 px-2.5 py-1 font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-200">ZUGFeRD / Factur-X · {t.profile} {PROFILE_LABEL[res.pdf.profile] ?? res.pdf.profile}</span></p>
@@ -134,14 +138,38 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
   );
 }
 
-const PROFILE_LABEL: Record<string, string> = { minimum: 'MINIMUM', 'basic-wl': 'BASIC WL', basic: 'BASIC', en16931: 'EN 16931', xrechnung: 'XRECHNUNG', extended: 'EXTENDED', zugferd1: 'ZUGFeRD 1' };
+const PROFILE_LABEL: Record<string, string> = { ubl: 'UBL', minimum: 'MINIMUM', 'basic-wl': 'BASIC WL', basic: 'BASIC', en16931: 'EN 16931', xrechnung: 'XRECHNUNG', extended: 'EXTENDED', zugferd1: 'ZUGFeRD 1' };
 
 const LEVEL_ORDER: Level[] = ['error', 'warning', 'information'];
 
 
-function Findings({ findings }: { findings: Finding[] }) {
+function PictureFindings({ findings }: { findings: Finding[] }) {
   const { t, lang } = useI18n();
-  if (!findings.length) return <p className="py-6 text-center text-slate-500 dark:text-slate-400">{t.noFindings}</p>;
+  if (!findings.length) return null;
+  return (
+    <section>
+      <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <span className="size-2 rounded-full bg-violet-500" aria-hidden="true" />{t.pictureHeading}
+      </h3>
+      <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">{t.pictureIntro}</p>
+      <ul className="space-y-2">
+        {findings.map((f, i) => (
+          <li key={f.code + i} className="animate-rise rounded-2xl border border-violet-200 bg-violet-50/50 p-4 dark:border-violet-500/30 dark:bg-violet-500/5" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+            <span className="block font-medium">{plainTitle(f.code, lang)}</span>
+            {f.value && <span className="mt-1 block text-sm text-slate-600 dark:text-slate-300">{t.xmlValue}: <span className="break-all font-mono">{f.value}</span></span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function Findings({ findings: all }: { findings: Finding[] }) {
+  const { t, lang } = useI18n();
+  const findings = all.filter((f) => !f.picture);
+  const picture = all.filter((f) => f.picture);
+  if (!all.length) return <p className="py-6 text-center text-slate-500 dark:text-slate-400">{t.noFindings}</p>;
+  if (!findings.length) return <PictureFindings findings={picture} />;
   const label: Record<Level, string> = { error: t.errors, warning: t.warnings, information: t.infos };
   const dot: Record<Level, string> = { error: 'bg-rose-500', warning: 'bg-amber-500', information: 'bg-sky-500' };
   return (
@@ -175,6 +203,7 @@ function Findings({ findings }: { findings: Finding[] }) {
           </ul>
         </section>
       ))}
+      <PictureFindings findings={picture} />
     </div>
   );
 }

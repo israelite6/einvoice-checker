@@ -13,10 +13,21 @@ export interface Finding {
   rawLevel: Level;
   text: string;
   location?: string;
+  /** Picture-vs-XML comparison (not an official rule), shown under its own heading. */
+  picture?: boolean;
+  /** The XML value a picture-vs-XML finding refers to. */
+  value?: string;
 }
 
-/** The checker itself could not load (network/offline), as opposed to a problem with the user's file. */
-export class EngineError extends Error {}
+/** The checker itself could not load (network/offline), as opposed to a problem with the user's file.
+ *  `reload` means a code module failed to load: browsers keep that failure until the page is reloaded. */
+export class EngineError extends Error {
+  readonly reload: boolean;
+  constructor(message: string, reload = false) {
+    super(message);
+    this.reload = reload;
+  }
+}
 
 /** Versioned URL for rule files, so returning users receive rule updates (cache key changes per release). */
 export const rulesUrl = (path: string) => `/rules/${path}?v=${__RULES_VERSION__}`;
@@ -25,7 +36,7 @@ const tick = () => new Promise<void>((r) => setTimeout(r, 0));
 
 export interface ValidationResult {
   status: 'valid' | 'valid-with-notes' | 'invalid' | 'unsupported' | 'not-xml'
-    | 'pdf-no-xml' | 'pdf-unreadable' | 'profile-incomplete' | 'profile-unsupported';
+    | 'pdf-no-xml' | 'pdf-unreadable' | 'profile-incomplete' | 'profile-unsupported' | 'embedded-unknown';
   scenario: string | null;
   syntax: 'ubl-invoice' | 'ubl-creditnote' | 'cii' | null;
   xsdValid: boolean | null;

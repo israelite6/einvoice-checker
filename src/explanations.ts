@@ -34,6 +34,8 @@ export const EXPLANATIONS: Record<string, Text> = {
   'PDF-XML-TOTAL': { de: 'Der Gesamtbetrag aus der XML steht nicht im PDF-Bild. Maßgeblich ist die XML.', en: 'The total from the XML does not appear in the PDF picture. The XML is authoritative.' },
   'PDF-XML-DUE': { de: 'Der fällige Betrag aus der XML steht nicht im PDF-Bild. Maßgeblich ist die XML.', en: 'The amount due from the XML does not appear in the PDF picture. The XML is authoritative.' },
   'PDF-XML-IBAN': { de: 'Die IBAN aus der XML steht nicht im PDF-Bild. Bitte vor dem Bezahlen prüfen – maßgeblich ist die XML.', en: 'The IBAN from the XML does not appear in the PDF picture. Please check before paying – the XML is authoritative.' },
+  'PDF-MULTI-XML': { de: 'Das PDF enthält mehrere Rechnungs-XML-Dateien; geprüft wurde die Standarddatei.', en: 'The PDF contains several invoice XML files; the standard one was checked.' },
+  'PDF-XML-NOMATCH': { de: 'Das PDF-Bild ließ sich nicht zuverlässig mit der XML vergleichen (andere Darstellung der Werte). Maßgeblich ist die XML.', en: 'The PDF picture could not be compared reliably with the XML (values are printed differently). The XML is authoritative.' },
   'PDF-XML-NOTEXT': { de: 'Das PDF enthält keinen lesbaren Text (z. B. ein Scan); ein Bild-Vergleich war nicht möglich.', en: 'The PDF has no readable text (e.g. a scan); the picture could not be compared.' },
   'XSD': { de: 'Aufbau der Datei entspricht nicht dem Schema.', en: 'The file structure does not match the schema.' },
 };
