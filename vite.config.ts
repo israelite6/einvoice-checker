@@ -40,6 +40,8 @@ export default defineConfig({
         // Rule files are requested with ?v=<rules version>, so a new release uses new cache keys;
         // the cache name also carries the version and older rule caches are removed on activate.
         cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         runtimeCaching: [{
           urlPattern: ({ url }) => url.pathname.startsWith('/rules/') || url.pathname.startsWith('/vendor/') || url.pathname.startsWith('/samples/'),
           handler: 'CacheFirst',

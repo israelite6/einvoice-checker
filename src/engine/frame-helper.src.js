@@ -5,7 +5,7 @@
 // and call downloadData(id, mime, filename). Anything unexpected is simply left inert.
 (function () {
   function h() { parent.postMessage({ type: 'xr-height', h: document.documentElement.scrollHeight }, '*'); }
-  var dl = /^downloadData\('([A-Za-z0-9_.:-]+)', '([A-Za-z0-9.+/-]*)', '([^'\\<>"]*)'\);?$/;
+  var dl = /^downloadData\('([^'\\<>"]+)', '([A-Za-z0-9.+/-]*)', '([^'\\<>"]*)'\);?$/;
   document.querySelectorAll('[onclick]').forEach(function (el) {
     var c = (el.getAttribute('onclick') || '').trim();
     el.removeAttribute('onclick');
@@ -13,7 +13,8 @@
       el.addEventListener('click', function () { show(el); h(); });
     } else {
       var m = dl.exec(c);
-      if (m) el.addEventListener('click', function (ev) { ev.preventDefault(); downloadData(m[1], m[2], m[3]); });
+      // Unrecognised handlers stay inert, and their links must not navigate the sandboxed view.
+      el.addEventListener('click', function (ev) { ev.preventDefault(); if (m) downloadData(m[1], m[2], m[3]); });
     }
   });
   addEventListener('load', h);

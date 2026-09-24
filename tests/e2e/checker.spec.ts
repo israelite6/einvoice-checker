@@ -87,7 +87,8 @@ test('no horizontal scroll', async ({ page }) => {
 
 for (const scheme of ['light', 'dark'] as const) {
   test(`accessibility (${scheme}): no serious or critical axe issues`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme });
+    // Reduced motion: axe measures settled content (not mid fade-in), and the reduced-motion path is covered.
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
     await page.goto('/');
     await page.getByRole('button', { name: 'Rechnung mit Fehler' }).click();
     await expect(page.getByText('BR-CO-16', { exact: true })).toBeVisible({ timeout: 30_000 });
@@ -208,6 +209,9 @@ test('B2: production analytics path sends only whitelisted fields, never file co
   expect(urls.filter((u) => !u.endsWith(' 127.0.0.1:8788'))).toEqual([]);
 });
 
+test.describe('without service worker', () => {
+  // Simulates a failed download of the checker; a service worker would serve cached rules instead.
+  test.use({ serviceWorkers: 'block' });
 test('B4: engine load failure is not reported as a broken file, and retry works', async ({ page }) => {
   await page.goto('/');
   await page.route('**/rules/validation/**', (r) => r.abort());
@@ -218,6 +222,7 @@ test('B4: engine load failure is not reported as a broken file, and retry works'
   await page.getByRole('button', { name: 'Erneut versuchen' }).click();
   await expect(page.getByRole('heading', { name: 'Nicht gültig' })).toBeVisible({ timeout: 30_000 });
 });
+});
 
 test('M13: skip link on a legal page keeps the route', async ({ page }) => {
   await page.goto('/#impressum');
@@ -227,12 +232,18 @@ test('M13: skip link on a legal page keeps the route', async ({ page }) => {
   expect(new URL(page.url()).hash).toBe('#impressum');
 });
 
-test('M1: invoice view also works offline after the first visit', async ({ page, context }) => {
+test('M1/N2: a genuine first visit is enough to work offline (checking and invoice view)', async ({ page, context }) => {
   await page.goto('/');
-  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
-  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) await page.reload();
-  // Give the idle prefetch time to cache all rule files, without any check online.
-  await page.waitForFunction(async () => (await caches.keys()).some((k) => k.startsWith('rules-')) && (await (await caches.open((await caches.keys()).find((k) => k.startsWith('rules-'))!)).keys()).length >= 10, null, { timeout: 30_000 });
+  // No reload and no check online: the service worker must take control and cache everything itself.
+  const required = ['/rules/scenarios.xml', '/rules/xsd.json', '/vendor/SaxonJS2.rt.js', '/rules/validation/EN16931-CII-validation.sef.json',
+    '/rules/validation/XRechnung-CII-validation.sef.json', '/rules/viz/cii-xr.sef.json', '/rules/viz/xrechnung-html.sef.json', '/rules/viz/l10n/de.xml'];
+  await page.waitForFunction(async (req) => {
+    const name = (await caches.keys()).find((k) => k.startsWith('rules-'));
+    if (!name) return false;
+    const have = (await (await caches.open(name)).keys()).map((r) => new URL(r.url).pathname);
+    return req.every((p) => have.includes(p));
+  }, required, { timeout: 30_000 });
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 30_000 });
   await context.setOffline(true);
   await page.reload();
   await page.locator('input[type=file]').setInputFiles({ name: 'offline-cii.xml', mimeType: 'application/xml', buffer: Buffer.from(fixture('valid-cii.xml')) });
@@ -251,9 +262,29 @@ for (const target of ['/#impressum', '/#datenschutz', '/#lizenzen']) {
 }
 
 test('accessibility: valid result with invoice view', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.getByRole('button', { name: 'Gültige Rechnung' }).click();
   await expect(page.getByRole('heading', { name: 'Gültig', exact: true })).toBeVisible({ timeout: 30_000 });
   const results = await new AxeBuilder({ page }).exclude('iframe').withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
   expect(results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+});
+
+test('N1: no layout shift while a check runs and the invoice view grows (CLS < 0.1)', async ({ page, context }) => {
+  const cdp = await context.newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    const w = window as unknown as { __cls: number };
+    w.__cls = 0;
+    new PerformanceObserver((l) => {
+      for (const e of l.getEntries() as unknown as { value: number; hadRecentInput: boolean }[]) if (!e.hadRecentInput) w.__cls += e.value;
+    }).observe({ type: 'layout-shift', buffered: false });
+  });
+  await page.getByRole('button', { name: 'Gültige Rechnung' }).click();
+  await expect(page.getByRole('heading', { name: 'Gültig', exact: true })).toBeVisible({ timeout: 60_000 });
+  await expect(page.frameLocator('iframe[title="Rechnung ansehen"]').getByText('Käuferreferenz').first()).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(1500);
+  const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);
+  expect(cls).toBeLessThan(0.1);
 });

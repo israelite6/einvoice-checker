@@ -48,11 +48,8 @@ export function InvoiceFrame({ xml, syntax, onPrintReady }: {
   if (failed) return <p className="text-slate-500">{t.errorGeneric}</p>;
   if (!html) {
     return (
-      <div className="space-y-3" role="status" aria-live="polite">
+      <div className="h-160 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800">
         <span className="sr-only">{t.rendering}</span>
-        {[70, 90, 55, 80].map((w, i) => (
-          <div key={i} className="h-4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" style={{ width: `${w}%` }} />
-        ))}
       </div>
     );
   }

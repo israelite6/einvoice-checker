@@ -4,6 +4,7 @@ import { plainTitle } from '../explanations';
 import { useI18n } from '../i18n';
 import { IconAlert, IconCheck, IconChevron, IconFile, IconInfo, IconPrinter, IconX } from './icons';
 import { InvoiceFrame } from './InvoiceFrame';
+import { shortLocation } from '../location';
 
 export interface FileResult {
   id: string;
@@ -97,7 +98,7 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'not-xml' ? t.verdictNotXml : t.verdictUnsupported;
   const c = counts(res?.findings ?? []);
   return (
-    <div className="flex items-start gap-4">
+    <div className="flex flex-col items-start gap-4 sm:flex-row">
       <div className={`grid size-14 shrink-0 animate-pop place-items-center rounded-2xl ${st.ring}`}>
         <StatusIcon t={tn} className="size-7" />
       </div>
@@ -123,12 +124,6 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
 
 const LEVEL_ORDER: Level[] = ['error', 'warning', 'information'];
 
-export function shortLocation(loc?: string): string | undefined {
-  if (!loc) return undefined;
-  if (loc.startsWith('line ')) return loc;
-  const parts = loc.replace(/Q\{[^}]*\}/g, '').replace(/\*:/g, '').split('/').filter(Boolean);
-  return parts.slice(-3).join(' › ').replace(/\[1\]/g, '');
-}
 
 function Findings({ findings }: { findings: Finding[] }) {
   const { t, lang } = useI18n();
@@ -176,16 +171,26 @@ export function ResultPanel({ r, onRetry }: { r: FileResult; onRetry?: () => voi
   // Until the user picks a tab, invalid invoices open on the findings and valid ones on the invoice.
   const [chosen, setTab] = useState<'view' | 'findings' | null>(null);
   const [printer, setPrinter] = useState<(() => void) | null>(null);
+  // Stable card height from the start of a check through the verdict, so content below does not jump (CLS).
+  const reserve = r.state === 'checking' || (r.state === 'done' && Boolean(r.result?.scenario));
   const tab = chosen ?? (r.result?.status === 'invalid' ? 'findings' : 'view');
   const active = canView ? tab : 'findings';
 
   return (
-    <article className="animate-rise overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <article className={`animate-rise overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 ${reserve ? 'min-h-[70vh]' : ''}`}>
       <div className={`h-1 ${r.state === 'checking' ? 'bg-brand-500' : TONE_STYLES[tone(r)].bar}`} />
-      <div className="p-5 sm:p-7">
+      {/* Reserve the verdict's height while checking, so the tabs and invoice view below do not jump (CLS). */}
+      <div className={`p-5 sm:p-7 ${reserve ? 'min-h-72 sm:min-h-48' : ''}`}>
         <p className="mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"><IconFile className="size-4" /><span className="truncate">{r.name}</span></p>
         {r.state === 'checking' ? <Progress step={r.step} /> : <Verdict r={r} onRetry={onRetry} />}
       </div>
+      {r.state === 'checking' && (
+        // Same footprint as the result section below (tab row + 640px panel), so nothing jumps when it arrives.
+        <div className="border-t border-slate-200 dark:border-slate-800" aria-hidden="true">
+          <div className="px-5 pt-4 sm:px-7"><div className="h-12 w-72 max-w-full animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" /></div>
+          <div className="p-5 sm:p-7"><div className="h-160 animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" /></div>
+        </div>
+      )}
       {r.state === 'done' && r.result?.scenario && (
         <div className="border-t border-slate-200 dark:border-slate-800">
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4 sm:px-7">
@@ -220,7 +225,7 @@ export function ResultPanel({ r, onRetry }: { r: FileResult; onRetry?: () => voi
               </button>
             )}
           </div>
-          <div className="p-5 sm:p-7" role="tabpanel" id={`panel-${r.id}`} aria-labelledby={`tab-${r.id}-${active}`}>
+          <div className="min-h-[calc(40rem+2.5rem)] p-5 sm:min-h-[calc(40rem+3.5rem)] sm:p-7" role="tabpanel" id={`panel-${r.id}`} aria-labelledby={`tab-${r.id}-${active}`}>
             {active === 'view' && canView
               ? <InvoiceFrame xml={r.xml!} syntax={r.result!.syntax!} onPrintReady={(fn) => setPrinter(() => fn)} />
               : <Findings findings={r.result!.findings} />}

@@ -42,6 +42,9 @@ const RULE_FILES = [
   'viz/ubl-invoice-xr.sef.json', 'viz/ubl-creditnote-xr.sef.json', 'viz/cii-xr.sef.json', 'viz/xrechnung-html.sef.json',
 ];
 
+// Loaded before the service worker controls a first visit; fetched again so they are cached offline too.
+const CORE_FILES = [rulesUrl('scenarios.xml'), rulesUrl('xsd.json'), rulesUrl('manifest.json'), `/vendor/SaxonJS2.rt.js?v=${__RULES_VERSION__}`, '/samples/valid.xml', '/samples/invalid.xml'];
+
 const VIEWER_RUNTIME_FILES = ['viz/FileSaver-v2.0.5.js', 'viz/xrechnung-viewer.js', 'viz/xrechnung-viewer.css', 'viz/l10n/de.xml', 'viz/l10n/en.xml'];
 
 interface Input { name: string; text: () => Promise<string>; kind: 'xml' | 'pdf' | 'too-large'; sample: boolean }
@@ -64,13 +67,19 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
     // After first paint: load the engine, then fetch every rule file into the offline cache
     // (the service worker stores them), so later checks and the invoice view also work offline.
     const idle = (cb: () => void) => (typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(cb) : setTimeout(cb, 800));
-    idle(() => {
-      warmUp().then(() => Promise.all([
-        ...RULE_FILES.map((f) => fetch(rulesUrl(f)).catch(() => undefined)),
-        // The viewer stylesheets load these at runtime by relative path (no version query).
-        ...VIEWER_RUNTIME_FILES.map((f) => fetch(`/rules/${f}`).catch(() => undefined)),
-      ])).catch(() => undefined);
-    });
+    const prefetch = () => Promise.all([
+      ...CORE_FILES.map((u) => fetch(u).catch(() => undefined)),
+      ...RULE_FILES.map((f) => fetch(rulesUrl(f)).catch(() => undefined)),
+      // The viewer stylesheets load these at runtime by relative path (no version query).
+      ...VIEWER_RUNTIME_FILES.map((f) => fetch(`/rules/${f}`).catch(() => undefined)),
+    ]);
+    idle(() => { warmUp().then(prefetch).catch(() => undefined); });
+    // On a first visit the service worker only takes control after install; fetch again then, so the
+    // files land in its offline cache (not just the HTTP cache). Cached responses make this cheap.
+    const sw = navigator.serviceWorker;
+    const onControl = () => { void prefetch(); };
+    sw?.addEventListener('controllerchange', onControl, { once: true });
+    return () => sw?.removeEventListener('controllerchange', onControl);
   }, []);
 
   const patch = (id: string, p: Partial<FileResult>) => setResults((rs) => rs.map((r) => (r.id === id ? { ...r, ...p } : r)));
@@ -152,7 +161,7 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
             <ResultPanel r={r} onRetry={() => retry(r.id)} />
           </ErrorBoundary>
         ))}
-        {results.some((r) => r.state === 'done') && (
+        {results.length > 0 && (
           <div className="animate-rise rounded-3xl border border-brand-100 bg-brand-50/60 p-5 sm:p-7 dark:border-brand-500/20 dark:bg-brand-500/10">
             <h2 className="font-semibold">{t.interestTitle}</h2>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{t.interestBody}</p>
