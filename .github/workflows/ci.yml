@@ -2,6 +2,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
   schedule:
     - cron: '0 5 * * 1'   # weekly parity re-check
 
@@ -10,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version-file: .nvmrc, cache: npm }
       - run: npm ci
       - run: npm run lint
@@ -23,14 +24,16 @@ jobs:
         env: { CI: 'true' }
 
   parity:
+    # Heavy job: weekly, on manual dispatch, and when the rules or engine change (finance-check-r1).
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[parity]')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults: { run: { working-directory: spike } }
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version-file: .nvmrc, cache: npm, cache-dependency-path: spike/package-lock.json }
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '21' }
       - run: npm ci
       - run: ./run-parity.sh

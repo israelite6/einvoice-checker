@@ -107,3 +107,19 @@ test('legal pages are reachable', async ({ page }) => {
   await page.goto('/#lizenzen');
   await expect(page.getByText('Saxonica')).toBeVisible();
 });
+
+test('works offline after the first check', async ({ page, context }) => {
+  await page.goto('/');
+  // Wait until the service worker controls the page, then do one online check to cache the rules.
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) await page.reload();
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 30_000 });
+  await page.getByRole('button', { name: 'Rechnung mit Fehler' }).click();
+  await expect(page.getByText('BR-CO-16', { exact: true })).toBeVisible({ timeout: 30_000 });
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByText(/Offline/)).toBeVisible();
+  await page.locator('input[type=file]').setInputFiles({ name: 'offline.xml', mimeType: 'application/xml', buffer: Buffer.from(SAMPLE_VALID) });
+  await expect(page.getByRole('heading', { name: 'Gültig', exact: true })).toBeVisible({ timeout: 30_000 });
+  await context.setOffline(false);
+});

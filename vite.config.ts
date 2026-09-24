@@ -25,6 +25,12 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg}', 'assets/inter-latin-wght-*.woff2'],
         globIgnores: ['rules/**', 'vendor/**', '_viztest.html'],
         navigateFallbackDenylist: [/^\/api\//],
+        // Cloudflare Pages redirects /index.html to / (308); precache the page under "/" instead.
+        navigateFallback: '/',
+        manifestTransforms: [async (entries) => ({
+          manifest: entries.map((e) => (e.url === 'index.html' ? { ...e, url: '/' } : e)),
+          warnings: [],
+        })],
         runtimeCaching: [{
           urlPattern: ({ url }) => url.pathname.startsWith('/rules/') || url.pathname.startsWith('/vendor/') || url.pathname.startsWith('/samples/'),
           handler: 'CacheFirst',
