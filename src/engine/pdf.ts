@@ -121,11 +121,18 @@ async function loadPdfJs() {
 export function prefetchPdfEngine(): void {
   void import('pdfjs-dist').catch(() => undefined);
   void fetch(workerUrl).catch(() => undefined);
+  // import() does not request a module again once loaded. If pdf.js loaded before the service worker took
+  // control, fetch it by URL so it also lands in the offline cache.
+  for (const e of performance.getEntriesByType('resource')) {
+    if (/\/assets\/pdf-[^/]*\.js$/.test(new URL(e.name).pathname)) void fetch(e.name).catch(() => undefined);
+  }
 }
 
 export async function readPdf(bytes: Uint8Array): Promise<PdfContent> {
   // Decompression-bomb guard before anything is unpacked.
   if (maxDeclaredXmlAttachmentSize(bytes) > MAX_XML_BYTES) throw new PdfAttachmentTooLarge('declared size');
+  // Download the worker while the pdf.js module loads (otherwise it starts only after the module is ready).
+  void fetch(workerUrl).catch(() => undefined);
   const pdfjs = await loadPdfJs();
   const task = pdfjs.getDocument({ data: bytes, enableXfa: false, useSystemFonts: false, disableFontFace: true, stopAtErrors: false });
   let doc;

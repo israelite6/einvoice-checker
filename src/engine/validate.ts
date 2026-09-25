@@ -1,6 +1,7 @@
 // Validates an XRechnung / EN 16931 XML invoice entirely in the browser, following the official
 // KoSIT validator configuration (scenarios.xml): XML Schema, then EN 16931 and XRechnung schematron.
 // Parity with the official Java validator: 678/678 files (spike/RESULTS.md).
+import xmllintWasmUrl from 'xmllint-wasm/xmllint.wasm?url';
 import { saxon, type SaxonNode } from './saxon';
 
 export type Level = 'error' | 'warning' | 'information';
@@ -87,7 +88,10 @@ export function warmUp(): Promise<unknown> {
     config = loadConfig();
     config.catch(() => { config = null; });
     // Fetch the schema validator (module + wasm) in parallel; failures surface later as EngineError.
+    // The package loads its wasm inside a worker only when validating; fetching it here puts it in the
+    // HTTP cache so the schema check does not wait for the download.
     import('xmllint-wasm').catch(() => undefined);
+    void fetch(xmllintWasmUrl).catch(() => undefined);
   }
   return config;
 }
@@ -125,6 +129,9 @@ export async function validateInvoice(xmlText: string, onStep?: (step: Step) => 
   }
   const scenario = scenarios.find((sc) => Boolean(S.XPath.evaluate(sc.match, doc, { namespaceContext: sc.namespaces })));
   if (!scenario) return done({ status: 'unsupported', scenario: null, syntax: null, xsdValid: null, findings: [] });
+
+  // Fetch all rule files of this scenario now, so later rule steps do not wait for their download.
+  for (const loc of scenario.schematron) void fetch(sefUrl(loc)).catch(() => undefined);
 
   onStep?.('schema');
   await tick();
