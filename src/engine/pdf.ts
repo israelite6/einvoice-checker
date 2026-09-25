@@ -33,13 +33,28 @@ export class PdfTimeout extends Error {}
 /** An embedded invoice XML exceeds the size limit (declared or actual); it is not unpacked. */
 export class PdfAttachmentTooLarge extends Error {}
 
-/** Largest uncompressed size declared by embedded files (/Params /Size), read without unpacking anything.
- *  Embedded-file stream dictionaries cannot live inside compressed object streams, so they are plain text. */
-export function maxDeclaredAttachmentSize(bytes: Uint8Array): number {
+/** Largest uncompressed size declared by embedded files that could be the invoice XML, read without unpacking.
+ *  Only XML candidates count (an .xml file name in the file specification, or an XML subtype on the stream):
+ *  Factur-X allows other large attachments (e.g. a scanned delivery note), which must not be rejected.
+ *  Embedded-file stream dictionaries cannot live inside compressed object streams, so they are plain text;
+ *  anything not visible here (e.g. indirect sizes) falls back to the check after unpacking. */
+export function maxDeclaredXmlAttachmentSize(bytes: Uint8Array): number {
   const text = new TextDecoder('latin1').decode(bytes);
+  // Object numbers of embedded-file streams referenced by an .xml file specification.
+  const xmlRefs = new Set<string>();
+  for (const m of text.matchAll(/<<((?:(?!<<|>>)[\s\S]){0,600}?\/(?:UF|F)\s*\((?:[^)\\]|\\.)*\.xml\)(?:(?!>>)[\s\S]){0,600}?)>>/gi)) {
+    const ef = /\/EF\s*<<[^>]*?\/(?:F|UF)\s+(\d+)\s+\d+\s+R/.exec(m[0]) ?? /\/(?:F|UF)\s+(\d+)\s+\d+\s+R/.exec(m[1]);
+    if (ef) xmlRefs.add(ef[1]);
+  }
+  // Also catch EF dictionaries that follow the file-spec string (common layout).
+  for (const m of text.matchAll(/\/(?:UF|F)\s*\((?:[^)\\]|\\.)*\.xml\)[\s\S]{0,300}?\/EF\s*<<[^>]*?\/(?:F|UF)\s+(\d+)\s+\d+\s+R/gi)) xmlRefs.add(m[1]);
   let max = 0;
-  for (const m of text.matchAll(/\/Params\s*<<([\s\S]{0,400}?)>>/g)) {
-    const size = /\/Size\s+(\d+)/.exec(m[1]);
+  for (const m of text.matchAll(/(\d+)\s+\d+\s+obj\s*<<([\s\S]{0,1200}?)>>\s*stream/g)) {
+    const [, num, dict] = m;
+    if (!/\/Type\s*\/EmbeddedFile/.test(dict)) continue;
+    const xmlish = xmlRefs.has(num) || /\/Subtype\s*\/(?:text|application)#2F(?:[a-z.+-]*\+)?xml\b/i.test(dict);
+    if (!xmlish) continue;
+    const size = /\/Params\s*<<[^>]*?\/Size\s+(\d+)/.exec(dict);
     if (size) max = Math.max(max, Number(size[1]));
   }
   return max;
@@ -110,7 +125,7 @@ export function prefetchPdfEngine(): void {
 
 export async function readPdf(bytes: Uint8Array): Promise<PdfContent> {
   // Decompression-bomb guard before anything is unpacked.
-  if (maxDeclaredAttachmentSize(bytes) > MAX_XML_BYTES) throw new PdfAttachmentTooLarge('declared size');
+  if (maxDeclaredXmlAttachmentSize(bytes) > MAX_XML_BYTES) throw new PdfAttachmentTooLarge('declared size');
   const pdfjs = await loadPdfJs();
   const task = pdfjs.getDocument({ data: bytes, enableXfa: false, useSystemFonts: false, disableFontFace: true, stopAtErrors: false });
   let doc;

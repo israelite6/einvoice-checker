@@ -6,7 +6,7 @@ import { plainTitle } from '../../src/explanations';
 import { decodeXml } from '../../src/files';
 import { parseEvent } from '../../shared/parse-event';
 import { amountVariants, compareWithPicture, dateVariants, isCalendarDate, keyFieldsFromCii } from '../../src/engine/consistency';
-import { maxDeclaredAttachmentSize, profileOf } from '../../src/engine/pdf';
+import { maxDeclaredXmlAttachmentSize, profileOf } from '../../src/engine/pdf';
 // @ts-expect-error plain ESM build script
 import { minify } from '../../scripts/build-frame-helper.mjs';
 
@@ -145,9 +145,11 @@ describe('release 2.1 hardening (QA r2 delta items 4–8)', () => {
     const xml = '<rsm:ExchangedDocument><ram:ID>R-1</ram:ID></rsm:ExchangedDocument><ram:GrandTotalAmount>100.00</ram:GrandTotalAmount>';
     expect(compareWithPicture(xml, 'Eine ganz andere Rechnung mit anderen Werten und viel Text hier')[0]).toMatchObject({ code: 'PDF-XML-NOMATCH', level: 'warning' });
   });
-  it('reads declared embedded-file sizes without unpacking', () => {
-    const pdf = new TextEncoder().encode('1 0 obj << /Type /EmbeddedFile /Params << /Size 419430400 /ModDate (D:2026) >> /Length 12 >> stream');
-    expect(maxDeclaredAttachmentSize(pdf)).toBe(419430400);
-    expect(maxDeclaredAttachmentSize(new TextEncoder().encode('%PDF-1.7 nothing'))).toBe(0);
-  });
-});
+  it('reads declared sizes of XML embedded files only, without unpacking', () => {
+    const enc = (t: string) => new TextEncoder().encode(t);
+    const xmlBig = '5 0 obj << /Type /Filespec /F (factur-x.xml) /UF (factur-x.xml) /EF << /F 6 0 R /UF 6 0 R >> >> endobj 6 0 obj << /Type /EmbeddedFile /Subtype /text#2Fxml /Params << /Size 419430400 >> /Length 12 >> stream';
+    const otherBig = '7 0 obj << /Type /Filespec /F (lieferschein.pdf) /EF << /F 8 0 R >> >> endobj 8 0 obj << /Type /EmbeddedFile /Subtype /application#2Fpdf /Params << /Size 12582912 >> /Length 12 >> stream';
+    expect(maxDeclaredXmlAttachmentSize(enc(xmlBig))).toBe(419430400);
+    expect(maxDeclaredXmlAttachmentSize(enc(otherBig))).toBe(0);
+    expect(maxDeclaredXmlAttachmentSize(enc('%PDF-1.7 nothing'))).toBe(0);
+  });});
