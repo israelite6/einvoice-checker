@@ -49,7 +49,7 @@ jobs:
         working-directory: .
         run: npm ci && npm run rules && npm run build && npx playwright install --with-deps chromium
       # (rules download is retried and checksum-verified in scripts/build-rules.mjs)
-      - name: Shipped-engine parity (browser): XML and ZUGFeRD/Factur-X PDFs
+      - name: 'Shipped-engine parity (browser): XML and ZUGFeRD/Factur-X PDFs'
         working-directory: .
         run: |
           node spike/zugferd/make-corpus.mjs
