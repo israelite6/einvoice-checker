@@ -96,6 +96,9 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
     ]);
     // Core engine first (needed by every check). The full offline prefetch waits until the first check
     // is done or the page has been idle for 15 s, so it never competes with the files a check needs now.
+    // Core engine first (needed by every check). The PDF engine loads when a PDF is dragged over the page,
+    // with the offline prefetch, or when a PDF check starts; preloading it at idle slowed the XML path
+    // (measured: XML cold 4.7 s -> 7.1 s) without enough gain for PDFs.
     idle(() => { warmUp().catch(() => undefined); });
     let prefetched = false;
     const prefetchOnce = () => { if (!prefetched) { prefetched = true; void prefetch(); } };

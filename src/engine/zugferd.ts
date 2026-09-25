@@ -18,12 +18,10 @@ export interface PdfResult extends ValidationResult {
 
 export async function validatePdf(bytes: Uint8Array, onStep?: (step: Step) => void): Promise<PdfResult> {
   const t0 = performance.now();
-  // Performance: while the PDF is parsed, load the validation engine and the CII rule/viewer files
-  // (ZUGFeRD/Factur-X is CII), so the check does not wait for them afterwards.
+  // Performance: while the PDF is parsed, load the validation engine and the CII rule files the verdict
+  // needs (ZUGFeRD/Factur-X is CII). Viewer files are not needed for the verdict and are not fetched here.
   void warmUp().catch(() => undefined);
-  for (const f of ['validation/EN16931-CII-validation.sef.json', 'validation/XRechnung-CII-validation.sef.json', 'viz/cii-xr.sef.json', 'viz/xrechnung-html.sef.json']) {
-    void fetch(rulesUrl(f)).catch(() => undefined);
-  }
+  void fetch(rulesUrl('validation/EN16931-CII-validation.sef.json')).catch(() => undefined);
   const content = await readPdf(bytes);
   const base = { scenario: null, syntax: null, xsdValid: null, findings: [] as ValidationResult['findings'] };
   const done = (r: Omit<PdfResult, 'ms'>): PdfResult => ({ ...r, ms: Math.round(performance.now() - t0) });
