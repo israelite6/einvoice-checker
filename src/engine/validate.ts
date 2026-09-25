@@ -36,7 +36,7 @@ const tick = () => new Promise<void>((r) => setTimeout(r, 0));
 
 export interface ValidationResult {
   status: 'valid' | 'valid-with-notes' | 'invalid' | 'unsupported' | 'not-xml'
-    | 'pdf-no-xml' | 'pdf-unreadable' | 'profile-incomplete' | 'profile-unsupported' | 'embedded-unknown';
+    | 'pdf-no-xml' | 'pdf-unreadable' | 'profile-incomplete' | 'profile-unsupported' | 'embedded-unknown' | 'embedded-too-large';
   scenario: string | null;
   syntax: 'ubl-invoice' | 'ubl-creditnote' | 'cii' | null;
   xsdValid: boolean | null;

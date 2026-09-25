@@ -8,7 +8,7 @@ import { Faq, Footer, LegalPage } from './components/Pages';
 import { ResultPanel, type FileResult } from './components/Results';
 import { EngineError, rulesUrl, validateInvoice, warmUp, type ValidationResult } from './engine/validate';
 import { MAX_BYTES, readXmlFile } from './files';
-import { PdfUnreadable } from './engine/pdf';
+import { PdfAttachmentTooLarge, PdfTimeout, PdfUnreadable } from './engine/pdf';
 import { DICTS, LangContext, initialLang, useI18n, type Lang } from './i18n';
 import { useTheme } from './theme';
 
@@ -136,7 +136,13 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
       window.dispatchEvent(new Event('einvoice:checked'));
       trackCheck({ status: result.status, syntax: result.syntax, sample: f.sample, ms: result.ms, rules: result.findings.filter((x) => x.level === 'error').map((x) => x.code), format: f.kind === 'pdf' ? 'pdf' : 'xml', profile: result.pdf?.profile });
     } catch (e) {
-      if (e instanceof PdfUnreadable) {
+      if (e instanceof PdfTimeout) {
+        patch(id, { state: 'timeout' });
+        onAnnounce(t.statusTimeout);
+      } else if (e instanceof PdfAttachmentTooLarge) {
+        patch(id, { state: 'done', result: { status: 'embedded-too-large', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
+        onAnnounce(t.statusEmbeddedTooLarge);
+      } else if (e instanceof PdfUnreadable) {
         patch(id, { state: 'done', result: { status: 'pdf-unreadable', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
         onAnnounce(t.statusPdfUnreadable);
       } else if (e instanceof EngineError) {

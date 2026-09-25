@@ -28,6 +28,22 @@ export interface PdfContent {
 
 /** The file itself is not a readable PDF (damaged, not a PDF, or password-protected). */
 export class PdfUnreadable extends Error {}
+/** Processing took too long (slow device or a hostile file); says nothing about the file being damaged. */
+export class PdfTimeout extends Error {}
+/** An embedded invoice XML exceeds the size limit (declared or actual); it is not unpacked. */
+export class PdfAttachmentTooLarge extends Error {}
+
+/** Largest uncompressed size declared by embedded files (/Params /Size), read without unpacking anything.
+ *  Embedded-file stream dictionaries cannot live inside compressed object streams, so they are plain text. */
+export function maxDeclaredAttachmentSize(bytes: Uint8Array): number {
+  const text = new TextDecoder('latin1').decode(bytes);
+  let max = 0;
+  for (const m of text.matchAll(/\/Params\s*<<([\s\S]{0,400}?)>>/g)) {
+    const size = /\/Size\s+(\d+)/.exec(m[1]);
+    if (size) max = Math.max(max, Number(size[1]));
+  }
+  return max;
+}
 
 /** Maps the CII guideline ID (BT-24) to a ZUGFeRD / Factur-X profile. */
 export function profileOf(guidelineId: string | null): Profile {
@@ -71,7 +87,7 @@ function isFileError(e: unknown): boolean {
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new PdfUnreadable('timeout')), ms); });
+  const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new PdfTimeout('timeout')), ms); });
   try { return await Promise.race([p, timeout]); } finally { clearTimeout(timer); }
 }
 
@@ -93,6 +109,8 @@ export function prefetchPdfEngine(): void {
 }
 
 export async function readPdf(bytes: Uint8Array): Promise<PdfContent> {
+  // Decompression-bomb guard before anything is unpacked.
+  if (maxDeclaredAttachmentSize(bytes) > MAX_XML_BYTES) throw new PdfAttachmentTooLarge('declared size');
   const pdfjs = await loadPdfJs();
   const task = pdfjs.getDocument({ data: bytes, enableXfa: false, useSystemFonts: false, disableFontFace: true, stopAtErrors: false });
   let doc;
@@ -100,7 +118,7 @@ export async function readPdf(bytes: Uint8Array): Promise<PdfContent> {
     doc = await withTimeout(task.promise, PARSE_TIMEOUT_MS);
   } catch (e) {
     void task.destroy();
-    if (e instanceof PdfUnreadable) throw e;
+    if (e instanceof PdfTimeout) throw e;
     if (isFileError(e)) throw new PdfUnreadable(String(e));
     throw new EngineError(String(e)); // worker failed to start, etc.
   }
@@ -113,7 +131,8 @@ export async function readPdf(bytes: Uint8Array): Promise<PdfContent> {
         const name = String(a.filename);
         if (!name.toLowerCase().endsWith('.xml')) continue;
         const content = a.content ?? (await doc.getAttachmentContent(id));
-        if (!content || content.length > MAX_XML_BYTES) continue;
+        if (!content) continue;
+        if (content.length > MAX_XML_BYTES) throw new PdfAttachmentTooLarge('actual size');
         const xml = decodeXml(content);
         if (looksLikeInvoice(xml)) candidates.push({ name, xml });
       }

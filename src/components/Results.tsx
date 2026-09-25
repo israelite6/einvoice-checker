@@ -10,9 +10,9 @@ export interface FileResult {
   id: string;
   name: string;
   sample: boolean;
-  state: 'checking' | 'done' | 'pdf' | 'engine-error' | 'too-large';
+  state: 'checking' | 'done' | 'pdf' | 'engine-error' | 'too-large' | 'timeout';
   step?: Step;
-  result?: ValidationResult & { pdf?: { profile: string; attachment: string | null } };
+  result?: ValidationResult & { pdf?: { profile: string; attachment: string | null; others?: string[] } };
   /** A code module failed to load; only a page reload recovers (browser module cache). */
   reloadNeeded?: boolean;
   xml?: string;
@@ -21,7 +21,7 @@ export interface FileResult {
 type Tone = 'ok' | 'warn' | 'bad' | 'neutral';
 
 function tone(r: FileResult): Tone {
-  if (r.state === 'engine-error') return 'warn';
+  if (r.state === 'engine-error' || r.state === 'timeout') return 'warn';
   if (r.state !== 'done') return 'neutral';
   switch (r.result?.status) {
     case 'valid': return 'ok';
@@ -85,7 +85,8 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
   const tn = tone(r);
   const st = TONE_STYLES[tn];
   const res = r.result;
-  const title = r.state === 'engine-error' ? t.statusEngine
+  const title = r.state === 'timeout' ? t.statusTimeout
+    : r.state === 'engine-error' ? t.statusEngine
     : r.state === 'too-large' ? t.tooLarge
     : r.state === 'pdf' ? t.statusPdf
     : res?.status === 'valid' ? t.statusValid
@@ -96,8 +97,10 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'profile-incomplete' ? t.statusProfileIncomplete
     : res?.status === 'profile-unsupported' ? t.statusProfileUnsupported
     : res?.status === 'embedded-unknown' ? t.statusEmbeddedUnknown
+    : res?.status === 'embedded-too-large' ? t.statusEmbeddedTooLarge
     : res?.status === 'not-xml' ? t.statusNotXml : t.statusUnsupported;
-  const body = r.state === 'engine-error' ? t.verdictEngine
+  const body = r.state === 'timeout' ? t.verdictTimeout
+    : r.state === 'engine-error' ? t.verdictEngine
     : r.state === 'too-large' ? t.verdictTooLarge
     : r.state === 'pdf' ? t.verdictPdf
     : res?.status === 'valid' ? t.verdictValid
@@ -108,6 +111,7 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
     : res?.status === 'profile-incomplete' ? t.verdictProfileIncomplete
     : res?.status === 'profile-unsupported' ? t.verdictProfileUnsupported
     : res?.status === 'embedded-unknown' ? t.verdictEmbeddedUnknown
+    : res?.status === 'embedded-too-large' ? t.verdictEmbeddedTooLarge
     : res?.status === 'not-xml' ? t.verdictNotXml : t.verdictUnsupported;
   const c = counts(res?.findings ?? []);
   return (
@@ -118,7 +122,10 @@ function Verdict({ r, onRetry }: { r: FileResult; onRetry?: () => void }) {
       <div className="min-w-0 flex-1">
         <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
         <p className="mt-1 text-slate-600 dark:text-slate-300">{body}</p>
-        {r.state === 'engine-error' && onRetry && (
+        {res?.pdf?.others && res.pdf.others.length > 0 && (
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{t.otherXml}: <span className="break-all font-mono">{res.pdf.others.join(', ')}</span></p>
+        )}
+        {(r.state === 'engine-error' || r.state === 'timeout') && onRetry && (
           <button type="button" onClick={r.reloadNeeded ? () => location.reload() : onRetry} className="mt-3 min-h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">{r.reloadNeeded ? t.reload : t.retry}</button>
         )}
         {res?.pdf && res.pdf.profile !== 'unknown' && (

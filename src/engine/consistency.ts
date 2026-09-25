@@ -41,7 +41,9 @@ export function isCalendarDate(v: string): boolean {
   return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
 }
 
-export function keyFieldsFromCii(xml: string): KeyField[] {
+export function keyFieldsFromCii(raw: string): KeyField[] {
+  // XML comments must not hide or split values (e.g. between the account element and the IBAN).
+  const xml = raw.replace(/<!--[\s\S]*?-->/g, '');
   const fields: KeyField[] = [];
   // BT-1 is the ID directly inside ExchangedDocument (not any later ID element).
   const nr = first(xml, /<(?:\w+:)?ExchangedDocument>\s*<(?:\w+:)?ID>([^<]+)</);
@@ -69,7 +71,9 @@ export function compareWithPicture(xml: string, pdfText: string): Finding[] {
   if (text.length < 20) return [note('PDF-XML-NOTEXT')];
   const fields = keyFieldsFromCii(xml);
   const missing = fields.filter((f) => !f.variants.some((v) => text.includes(squash(v))));
-  // Nothing matched at all: the picture is probably laid out or formatted in a way we cannot compare.
-  if (fields.length > 1 && missing.length === fields.length) return [note('PDF-XML-NOMATCH')];
+  // Nothing matched at all: one neutral warning (the picture may show other data or print it differently).
+  if (fields.length > 1 && missing.length === fields.length) {
+    return [{ code: 'PDF-XML-NOMATCH', level: 'warning', rawLevel: 'warning', text: '', picture: true }];
+  }
   return missing.map((f) => ({ code: f.code, level: 'warning' as const, rawLevel: 'warning' as const, text: '', value: f.value, picture: true }));
 }

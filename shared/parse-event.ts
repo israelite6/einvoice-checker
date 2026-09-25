@@ -1,7 +1,7 @@
 // Pure validation of an event payload (unit-tested). Returns null for anything not whitelisted.
 
 const EVENTS = new Set(['view', 'check', 'interest', 'multi', 'pdf']);
-const STATUSES = new Set(['valid', 'valid-with-notes', 'invalid', 'unsupported', 'not-xml', 'pdf-no-xml', 'pdf-unreadable', 'profile-incomplete', 'profile-unsupported']);
+const STATUSES = new Set(['valid', 'valid-with-notes', 'invalid', 'unsupported', 'not-xml', 'pdf-no-xml', 'pdf-unreadable', 'profile-incomplete', 'profile-unsupported', 'embedded-unknown', 'embedded-too-large']);
 const FORMATS = new Set(['xml', 'pdf']);
 const PROFILES = new Set(['minimum', 'basic-wl', 'basic', 'en16931', 'xrechnung', 'extended', 'zugferd1', 'unknown']);
 const SYNTAXES = new Set(['ubl-invoice', 'ubl-creditnote', 'cii']);

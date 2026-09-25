@@ -6,7 +6,7 @@ import { plainTitle } from '../../src/explanations';
 import { decodeXml } from '../../src/files';
 import { parseEvent } from '../../shared/parse-event';
 import { amountVariants, compareWithPicture, dateVariants, isCalendarDate, keyFieldsFromCii } from '../../src/engine/consistency';
-import { profileOf } from '../../src/engine/pdf';
+import { maxDeclaredAttachmentSize, profileOf } from '../../src/engine/pdf';
 // @ts-expect-error plain ESM build script
 import { minify } from '../../scripts/build-frame-helper.mjs';
 
@@ -129,9 +129,25 @@ describe('picture vs XML: QA r2 findings (RM1)', () => {
     expect(keyFieldsFromCii(base(payee)).find((f) => f.code === 'PDF-XML-IBAN')?.value).toBe('DE11111111111111111111');
     expect(keyFieldsFromCii(base(debit)).find((f) => f.code === 'PDF-XML-IBAN')).toBeUndefined();
   });
-  it('gives one neutral note when nothing can be matched', () => {
+  it('gives one neutral finding when nothing can be matched (a warning since release 2.1)', () => {
     const r = compareWithPicture(base(''), 'Ganz anderes Layout ohne erkennbare Werte, nur Fließtext und Logos hier');
     expect(r.map((f) => f.code)).toEqual(['PDF-XML-NOMATCH']);
-    expect(r[0].level).toBe('information');
+    expect(r[0].level).toBe('warning');
+  });
+});
+
+describe('release 2.1 hardening (QA r2 delta items 4–8)', () => {
+  it('ignores XML comments when reading the payee IBAN', () => {
+    const xml = '<rsm:ExchangedDocument><ram:ID>R-9</ram:ID></rsm:ExchangedDocument><ram:PayeePartyCreditorFinancialAccount><!-- account --><ram:IBANID>DE33333333333333333333</ram:IBANID></ram:PayeePartyCreditorFinancialAccount>';
+    expect(keyFieldsFromCii(xml).find((f) => f.code === 'PDF-XML-IBAN')?.value).toBe('DE33333333333333333333');
+  });
+  it('treats "no value matches at all" as a warning, not a note', () => {
+    const xml = '<rsm:ExchangedDocument><ram:ID>R-1</ram:ID></rsm:ExchangedDocument><ram:GrandTotalAmount>100.00</ram:GrandTotalAmount>';
+    expect(compareWithPicture(xml, 'Eine ganz andere Rechnung mit anderen Werten und viel Text hier')[0]).toMatchObject({ code: 'PDF-XML-NOMATCH', level: 'warning' });
+  });
+  it('reads declared embedded-file sizes without unpacking', () => {
+    const pdf = new TextEncoder().encode('1 0 obj << /Type /EmbeddedFile /Params << /Size 419430400 /ModDate (D:2026) >> /Length 12 >> stream');
+    expect(maxDeclaredAttachmentSize(pdf)).toBe(419430400);
+    expect(maxDeclaredAttachmentSize(new TextEncoder().encode('%PDF-1.7 nothing'))).toBe(0);
   });
 });

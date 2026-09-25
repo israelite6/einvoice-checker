@@ -3,7 +3,7 @@
 // shown (readable view) but explicitly marked as not checked; we never guess a verdict.
 import { compareWithPicture } from './consistency';
 import { readPdf, type PdfContent, type Profile } from './pdf';
-import { validateInvoice, type Step, type ValidationResult } from './validate';
+import { rulesUrl, validateInvoice, warmUp, type Step, type ValidationResult } from './validate';
 
 /** Profiles whose XML the official EN 16931 / XRechnung rules cover. */
 const CHECKABLE: Profile[] = ['en16931', 'xrechnung', 'ubl'];
@@ -11,13 +11,19 @@ const CHECKABLE: Profile[] = ['en16931', 'xrechnung', 'ubl'];
 const INCOMPLETE: Profile[] = ['minimum', 'basic-wl'];
 
 export interface PdfResult extends ValidationResult {
-  pdf: { profile: Profile; attachment: string | null };
+  pdf: { profile: Profile; attachment: string | null; others?: string[] };
   /** The embedded XML (for the readable view), if found. */
   xml: string | null;
 }
 
 export async function validatePdf(bytes: Uint8Array, onStep?: (step: Step) => void): Promise<PdfResult> {
   const t0 = performance.now();
+  // Performance: while the PDF is parsed, load the validation engine and the CII rule/viewer files
+  // (ZUGFeRD/Factur-X is CII), so the check does not wait for them afterwards.
+  void warmUp().catch(() => undefined);
+  for (const f of ['validation/EN16931-CII-validation.sef.json', 'validation/XRechnung-CII-validation.sef.json', 'viz/cii-xr.sef.json', 'viz/xrechnung-html.sef.json']) {
+    void fetch(rulesUrl(f)).catch(() => undefined);
+  }
   const content = await readPdf(bytes);
   const base = { scenario: null, syntax: null, xsdValid: null, findings: [] as ValidationResult['findings'] };
   const done = (r: Omit<PdfResult, 'ms'>): PdfResult => ({ ...r, ms: Math.round(performance.now() - t0) });
@@ -25,7 +31,7 @@ export async function validatePdf(bytes: Uint8Array, onStep?: (step: Step) => vo
   if (!content.xml) {
     return done({ ...base, status: 'pdf-no-xml', pdf: { profile: 'unknown', attachment: null }, xml: null });
   }
-  const pdf = { profile: content.profile, attachment: content.attachmentName };
+  const pdf = { profile: content.profile, attachment: content.attachmentName, others: content.otherInvoiceAttachments };
   if (INCOMPLETE.includes(content.profile)) {
     return done({ ...base, status: 'profile-incomplete', syntax: 'cii', pdf, xml: content.xml });
   }
@@ -50,9 +56,6 @@ export async function validatePdf(bytes: Uint8Array, onStep?: (step: Step) => vo
 /** Adds the picture-vs-XML comparison (CII only) and notes about further invoice attachments. */
 function withPicture(res: ValidationResult, content: PdfContent, pdf: PdfResult['pdf']): Omit<PdfResult, 'ms'> {
   const extra = res.syntax === 'cii' ? compareWithPicture(content.xml!, content.text) : [];
-  if (content.otherInvoiceAttachments.length) {
-    extra.push({ code: 'PDF-MULTI-XML', level: 'information', rawLevel: 'information', text: '', value: content.otherInvoiceAttachments.join(', '), picture: true });
-  }
   const findings = [...res.findings, ...extra];
   const hasError = findings.some((f) => f.level === 'error');
   const hasWarning = findings.some((f) => f.level === 'warning');

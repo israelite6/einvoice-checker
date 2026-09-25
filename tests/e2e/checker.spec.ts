@@ -117,6 +117,13 @@ test('plain PDF without XML and a corrupt PDF are reported clearly', async ({ pa
   await expect(page.getByRole('heading', { name: 'PDF konnte nicht gelesen werden' }).first()).toBeVisible({ timeout: 45_000 });
 });
 
+test('release 2.1: an embedded file declaring a huge size is not unpacked', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('input[type=file]').setInputFiles(pdf('declared-bomb.pdf'));
+  await expect(page.getByRole('heading', { name: 'Eingebettete Rechnungsdaten zu groß' })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByText('Keine eingebettete E-Rechnung gefunden')).toHaveCount(0);
+});
+
 test.describe('PDF engine unavailable (no service worker)', () => {
   test.use({ serviceWorkers: 'block' });
   test('RB1: a PDF engine load failure is not reported as a problem with the file; retry works', async ({ page }) => {

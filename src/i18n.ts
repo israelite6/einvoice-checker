@@ -94,6 +94,11 @@ const de = {
   pictureIntro: 'Hilfsvergleich, keine offizielle Regel: Wir suchen wichtige Werte aus der XML im sichtbaren PDF. Maßgeblich ist immer die XML.',
   xmlValue: 'Wert in der XML',
   statusEmbeddedUnknown: 'Eingebettete XML nicht erkannt',
+  statusEmbeddedTooLarge: 'Eingebettete Rechnungsdaten zu groß',
+  verdictEmbeddedTooLarge: 'Die im PDF eingebettete XML ist größer als 10 MB und wurde aus Sicherheitsgründen nicht entpackt.',
+  statusTimeout: 'Die Verarbeitung hat zu lange gedauert',
+  verdictTimeout: 'Das liegt nicht unbedingt an der Datei – auf langsamen Geräten kann das passieren. Bitte erneut versuchen.',
+  otherXml: 'Weitere Rechnungs-XML im PDF (nicht geprüft)',
   verdictEmbeddedUnknown: 'Das PDF enthält eine XML-Datei, die keinem unterstützten E-Rechnungsformat entspricht.',
 };
 
@@ -191,6 +196,11 @@ const en: Dict = {
   pictureIntro: 'A helpful comparison, not an official rule: we look for key XML values in the visible PDF. The XML is always authoritative.',
   xmlValue: 'Value in the XML',
   statusEmbeddedUnknown: 'Embedded XML not recognised',
+  statusEmbeddedTooLarge: 'Embedded invoice data too large',
+  verdictEmbeddedTooLarge: 'The XML embedded in the PDF is larger than 10 MB and was not unpacked, for safety.',
+  statusTimeout: 'Processing took too long',
+  verdictTimeout: 'This is not necessarily a problem with the file – it can happen on slow devices. Please try again.',
+  otherXml: 'Further invoice XML in the PDF (not checked)',
   verdictEmbeddedUnknown: 'The PDF contains an XML file that does not match a supported e-invoice format.',
 };
 
