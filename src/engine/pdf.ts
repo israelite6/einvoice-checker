@@ -119,13 +119,15 @@ async function loadPdfJs() {
 
 /** Fetches pdf.js and its worker ahead of time (offline cache, faster first PDF check). */
 export function prefetchPdfEngine(): void {
-  void import('pdfjs-dist').catch(() => undefined);
   void fetch(workerUrl).catch(() => undefined);
   // import() does not request a module again once loaded. If pdf.js loaded before the service worker took
-  // control, fetch it by URL so it also lands in the offline cache.
-  for (const e of performance.getEntriesByType('resource')) {
-    if (/\/assets\/pdf-[^/]*\.js$/.test(new URL(e.name).pathname)) void fetch(e.name).catch(() => undefined);
-  }
+  // control, fetch it by URL so it also lands in the offline cache. This runs after the import settles, so a
+  // chunk still downloading at takeover has its resource entry by then (App calls this again on takeover).
+  void import('pdfjs-dist').catch(() => undefined).then(() => {
+    for (const e of performance.getEntriesByType('resource')) {
+      if (/\/assets\/pdf-[^/]*\.js$/.test(new URL(e.name).pathname)) void fetch(e.name).catch(() => undefined);
+    }
+  });
 }
 
 export async function readPdf(bytes: Uint8Array): Promise<PdfContent> {

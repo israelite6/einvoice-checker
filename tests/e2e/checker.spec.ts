@@ -146,6 +146,14 @@ test.describe('PDF engine unavailable (no service worker)', () => {
     await page.locator('input[type=file]').setInputFiles(pdf('zugferd-valid.pdf'));
     await expect(page.getByRole('heading', { name: /^Gültig/ })).toBeVisible({ timeout: 45_000 });
   });
+
+  test('R22-M2: a failed sample download is an engine problem, not "no readable XML"', async ({ page }) => {
+    await page.goto('/');
+    await page.route(/\/samples\/zugferd\.pdf/, (r) => r.abort('internetdisconnected'));
+    await page.getByRole('button', { name: 'ZUGFeRD-PDF' }).click();
+    await expect(page.getByRole('heading', { name: 'Prüfmodul konnte nicht geladen werden' })).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByText('Keine lesbare XML-Datei')).toHaveCount(0);
+  });
 });
 
 test('RB1: after one XML check, ZUGFeRD PDFs also work offline (HTTP cache cleared)', async ({ page, context }) => {
@@ -156,8 +164,12 @@ test('RB1: after one XML check, ZUGFeRD PDFs also work offline (HTTP cache clear
   await expect.poll(async () => page.evaluate(async () => {
     const keys = await caches.keys();
     const pdfCache = keys.find((k) => k === 'pdfjs');
-    if (!pdfCache) return false;
-    return (await (await caches.open(pdfCache)).keys()).length >= 2;
+    const rulesCache = keys.find((k) => k.startsWith('rules-'));
+    if (!pdfCache || !rulesCache) return false;
+    // Everything the offline ZUGFeRD sample check needs: pdf.js + worker, the sample, and both CII rule files.
+    const rules = (await (await caches.open(rulesCache)).keys()).map((r) => new URL(r.url).pathname);
+    const needed = ['/samples/zugferd.pdf', '/rules/validation/EN16931-CII-validation.sef.json', '/rules/validation/XRechnung-CII-validation.sef.json'];
+    return (await (await caches.open(pdfCache)).keys()).length >= 2 && needed.every((p) => rules.includes(p));
   }), { timeout: 45_000 }).toBe(true);
   const cdp = await context.newCDPSession(page);
   await cdp.send('Network.clearBrowserCache');
@@ -166,6 +178,23 @@ test('RB1: after one XML check, ZUGFeRD PDFs also work offline (HTTP cache clear
   await page.getByRole('button', { name: 'ZUGFeRD-PDF' }).click();
   await expect(page.getByRole('heading', { name: /^Gültig/ })).toBeVisible({ timeout: 45_000 });
   await context.setOffline(false);
+});
+
+test('R22-M1: pdf.js still downloading when the service worker takes over also lands in the offline cache', async ({ page, context }) => {
+  // Delay the first pdf.js chunk response so the service worker takes control while it is still loading.
+  let delayed = false;
+  await context.route(/\/assets\/pdf-[^/]*\.js$/, async (route) => {
+    if (!delayed) { delayed = true; await new Promise((r) => setTimeout(r, 8000)); }
+    await route.continue();
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Rechnung mit Fehler' }).click();
+  await expect(page.getByRole('heading', { name: 'Nicht gültig' })).toBeVisible({ timeout: 30_000 });
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller), null, { timeout: 30_000 });
+  await expect.poll(async () => page.evaluate(async () => {
+    if (!(await caches.keys()).includes('pdfjs')) return false;
+    return (await (await caches.open('pdfjs')).keys()).some((r) => /\/assets\/pdf-[^/]*\.js$/.test(new URL(r.url).pathname));
+  }), { timeout: 45_000 }).toBe(true);
 });
 
 test('theme toggle switches and persists', async ({ page }) => {

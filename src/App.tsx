@@ -148,12 +148,14 @@ function Checker({ onAnnounce }: { onAnnounce: (msg: string) => void }) {
       } else if (e instanceof PdfUnreadable) {
         patch(id, { state: 'done', result: { status: 'pdf-unreadable', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
         onAnnounce(t.statusPdfUnreadable);
-      } else if (e instanceof EngineError) {
-        patch(id, { state: 'engine-error', reloadNeeded: e.reload });
-        onAnnounce(t.statusEngine);
-      } else {
+      } else if (e instanceof DOMException && (e.name === 'NotReadableError' || e.name === 'NotFoundError')) {
+        // The browser could not read the chosen file (moved, deleted, or no permission).
         patch(id, { state: 'done', result: { status: 'not-xml', scenario: null, syntax: null, xsdValid: null, findings: [], ms: 0 } });
         onAnnounce(t.statusNotXml);
+      } else {
+        // Anything else (e.g. a failed download while offline) is an engine problem, never a verdict on the file.
+        patch(id, { state: 'engine-error', reloadNeeded: e instanceof EngineError && e.reload });
+        onAnnounce(t.statusEngine);
       }
     }
   }, [onAnnounce, t]);
