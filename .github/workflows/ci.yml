@@ -19,7 +19,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: .cache
           key: rules-${{ hashFiles('scripts/build-rules.mjs') }}
